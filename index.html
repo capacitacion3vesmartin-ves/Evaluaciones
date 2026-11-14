@@ -1250,8 +1250,8 @@ function fm(s,keepNL){s=String(s==null?'':s);let o='',st=[],last=0;const tg={b:[
 const fmx=s=>fm(s,1),mhtml=s=>fm(s)+(/\n$/.test(String(s||''))?'<br>':'');
 function fmb(s){const L=String(s==null?'':s).split('\n');let o='';L.forEach((l,k)=>{if(BULRE.test(l))o+=`<div class="bl"><span>•</span><span>${fm(l.replace(BULRP,'$1'))}</span></div>`;else o+=(k&&!BULRE.test(L[k-1])?'<br>':'')+fm(l)});return o}
 /* casillero con lista: [~*correcta¦otra¦otra]  (el * marca la correcta) */
-const hlP=a=>{const it=String(a).replace(/^~/,'').split('¦').map(z=>({t:z.replace(/^\s*\*/,'').trim(),c:/^\s*\*/.test(z)})).filter(o=>o.t),k=it.findIndex(o=>o.c);return{l:it.map(o=>o.t),c:k<0?'':it[k].t,k}};
-const plL=x=>{const o=hlP(x);return `<span class="pl lst" contenteditable="false"><input readonly data-l="${e(x)}" value="${e(o.c)}" placeholder="respuesta" size="${Math.max(3,o.c.length+1)}" autocomplete="off"></span>${ZW}`};
+const hlP=a=>{const it=String(a).replace(/^~/,'').split('¦').map(z=>({t:z.replace(/^\s*\*/,'').trim(),c:/^\s*\*/.test(z)})).filter(o=>o.t),k=it.findIndex(o=>o.c);return{l:it.map(o=>o.t),c:k<0?'':it[k].t,k,cs:it.filter(o=>o.c).map(o=>o.t),ks:it.map((o,j)=>o.c?j:-1).filter(j=>j>=0)}};
+const plL=x=>{const o=hlP(x);return `<span class="pl lst" contenteditable="false"><input readonly data-l="${e(x)}" value="${e(o.cs.join(' / ')||o.c)}" placeholder="respuesta" size="${Math.max(3,(o.cs.join(' / ')||o.c).length+1)}" autocomplete="off"></span>${ZW}`};
 function hueT(tx,cb){return String(tx||'').split(GR).map((x,j)=>j%2===0?fmx(x):cb(0,x)).join('')}
 const hexOf=c=>{c=String(c||'').trim();if(/^#[0-9a-f]{3,6}$/i.test(c))return c.toLowerCase();const m=c.match(/[\d.]+/g);if(!m||m.length<3||(m.length>3&&+m[3]===0))return'';return'#'+m.slice(0,3).map(x=>Math.round(+x).toString(16).padStart(2,'0')).join('')};
 function rtHtml(tx){tx=String(tx||'');return tx.split(GR).map((x,k)=>k%2&&x.charAt(0)==='~'?plL(x):k%2?`<span class="pl" contenteditable="false"><input value="${e(x)}" placeholder="respuesta" size="${Math.max(3,x.length+1)}" autocomplete="off"></span>${ZW}`:fm(x)).join('')+(/\n$/.test(tx)?'<br>':'')}
@@ -1413,7 +1413,7 @@ const FOLSVG='<svg viewBox="0 0 120 88" width="100%" height="100%" aria-hidden="
 function dropTo(ev,fid){ev.preventDefault();ev.stopPropagation();ev.currentTarget.classList.remove('ov');const v=DB.evals.find(x=>x.id===EDG);EDG=null;if(!v||!M||(v.f||'')===fid)return;v.f=fid;save(1);lib()}
 function lib(){if(!DB.folders.some(f=>f.id===F))F='all';
  const cur=DB.folders.find(f=>f.id===F);
- A.innerHTML=`<h1>Evaluaciones</h1><div class="lb${M?'':' lb1'}">${M?'<aside class="fs"></aside>':''}<section class="ls"><div class="tbr"><label class="sb">${li('sea',16)}<input id="qs" type="search" placeholder="Buscar evaluación..." value="${e(QS)}" oninput="QS=this.value;rows()"></label><select id="so" onchange="SO=this.value;rows()">${[['new','Más recientes'],['old','Más antiguas'],['az','Nombre A–Z'],['qs','Más preguntas']].map(([k,n])=>`<option value="${k}" ${SO===k?'selected':''}>${n}</option>`).join('')}</select>${M?`${F==='all'?'<button class="bt w" onclick="addF()">+ Carpeta</button>':cur&&!cur.p?'<button class="bt w" onclick="addSub()">+ Subcarpeta</button>':''}<button class="bt asgvb" onclick="asgvOpen()">Asignaciones</button><button class="bt" onclick="newE()">+ Nueva evaluación</button><button class="bt w sm" onclick="exp()">Respaldo ⬇</button><label class="bt w sm" style="text-align:center">Importar ⬆<input type="file" accept=".json" hidden onchange="imp(this)"></label>`:''}</div><div id="rws"></div></section></div>`;rows()}
+ A.innerHTML=`<h1>Evaluaciones</h1><div class="lb${M?'':' lb1'}">${M?'<aside class="fs"></aside>':''}<section class="ls"><div class="tbr"><label class="sb">${li('sea',16)}<input id="qs" type="search" placeholder="Buscar evaluación..." value="${e(QS)}" oninput="QS=this.value;rows()"></label><select id="so" onchange="SO=this.value;rows()">${[['new','Más recientes'],['old','Más antiguas'],['az','Nombre A–Z'],['qs','Más preguntas']].map(([k,n])=>`<option value="${k}" ${SO===k?'selected':''}>${n}</option>`).join('')}</select>${M?`${F==='all'?'<button class="bt w" onclick="addF()">+ Carpeta</button>':cur&&!cur.p?'<button class="bt w" onclick="addSub()">+ Subcarpeta</button>':''}<button class="bt asgvb" onclick="VW='asg';render()">Asignaciones</button><button class="bt" onclick="newE()">+ Nueva evaluación</button><button class="bt w sm" onclick="exp()">Respaldo ⬇</button><label class="bt w sm" style="text-align:center">Importar ⬆<input type="file" accept=".json" hidden onchange="imp(this)"></label>`:''}</div><div id="rws"></div></section></div>`;rows()}
 function rows(){const q=nz(QS),ix=v=>DB.evals.indexOf(v),here=F==='all'?'':F,cur=DB.folders.find(f=>f.id===F),par=cur&&cur.p?DB.folders.find(f=>f.id===cur.p):null;
  let L=(q?DB.evals:DB.evals.filter(v=>(v.f||'')===here)).filter(v=>!q||nz(v.n).includes(q));
  L.sort(SO==='az'?(a,b)=>a.n.localeCompare(b.n,'es'):SO==='qs'?(a,b)=>b.qs.length-a.qs.length:SO==='old'?(a,b)=>ix(a)-ix(b):(a,b)=>ix(b)-ix(a));
@@ -1515,9 +1515,9 @@ function lnd(w){const s=w.querySelector('svg'),b=w.getBoundingClientRect();s.inn
 addEventListener('resize',()=>document.querySelectorAll('.ln').forEach(lnd));
 /* ---------- ALUMNO ---------- */
 const xs=s=>Array.isArray(s)?s.map(x=>String(x).trim()).filter(Boolean):String(s||'').split(',').map(x=>x.trim()).filter(Boolean);
-function pqh(q){const rw=rws(q).filter(r=>r.tx.trim()),first=a=>a.split('|')[0].trim(),al=r=>[...r.tx.matchAll(GR)].map(m=>first(m[1]));
+function pqh(q){const rw=rws(q).filter(r=>r.tx.trim()),first=a=>a.split('|')[0].trim(),al=r=>[...r.tx.matchAll(GR)].map(m=>first(m[1])),alA=r=>[...r.tx.matchAll(GR)].flatMap(m=>m[1].split('|').map(z=>z.trim()).filter(Boolean));
  const ans=rw.flatMap(al),dis=[];xs(q.ex).forEach(w=>{if(![...ans,...dis].some(x=>nz(x)===nz(w)))dis.push(w)});
- const h=rw.map((r,k)=>{const words=[...new Set([...al(r),...xs(r.ex)])];
+ const h=rw.map((r,k)=>{const words=[...new Set([...(q.m==='lis'?alA(r):al(r)),...xs(r.ex)])];
   const t=r.tx.split(GR).map((x,j)=>{if(j%2===0)return fmx(x);const d=`data-a="${e(x)}"`,n=Math.max(...x.split('|').map(y=>y.trim().length),2)+2;
    return q.m==='lis'?`<select class="gp" ${d}><option value=""></option>${sh(words).map(o=>`<option>${e(o)}</option>`).join('')}</select>`:`<span class="hole" ${d} style="min-width:${n}ch"></span>`}).join('');
   return `<div class="vfr hr${k%2?' z':''}"><span class="vfl"><span class="vfd">•</span><span>${t}</span></span></div>`}).join('');
@@ -1526,7 +1526,7 @@ function pq0(q){
  if(q.t==='hue'&&q.m!=='esc')return pqh(q);
  if(q.t==='hue'){const al=[...q.tx.matchAll(GR)].map(m=>m[1].split('|')[0].trim()),words=[...new Set([...al,...xs(q.ex)])];
   const MB=q.tx.split('\n').filter(z=>z.trim()).length>1,IB=z=>/^(<[^>]+>)*• /.test(z)||(MB&&z.trim()!==''),t=hueT(q.tx,(m,a)=>{const w=a.split('|')[0].trim(),d=`data-a="${e(a)}"`;
-   if(q.m==='esc'&&a.charAt(0)==='~'){const o=hlP(a);return `<select class="gp" data-a="${e(o.c)}"><option value=""></option>${sh(o.l).map(z=>`<option>${e(z)}</option>`).join('')}</select>`}
+   if(q.m==='esc'&&a.charAt(0)==='~'){const o=hlP(a);return `<select class="gp" data-a="${e(o.cs.join('|')||o.c)}"><option value=""></option>${sh(o.l).map(z=>`<option>${e(z)}</option>`).join('')}</select>`}
    return q.m==='esc'?`<input class="gp" ${d} size="${Math.max(...a.split('|').map(x=>x.trim().length),2)+2}" autocomplete="off">`:q.m==='lis'?`<select class="gp" ${d}><option value=""></option>${sh(words).map(o=>`<option>${e(o)}</option>`).join('')}</select>`:`<span class="hole" ${d} style="min-width:${Math.max(...a.split('|').map(x=>x.trim().length),2)+2}ch"></span>`}).split('\n').reduce((h,l,k,a)=>IB(l)?h+`<div class="bl"><span>•</span><span>${l.replace(/^((?:<[^>]+>)*)• /,'$1')}</span></div>`:h+(k&&!IB(a[k-1])?'<br>':'')+l,'');
   return `<div style="line-height:2.1">${t}</div>`+(q.m==='arr'?`<div class="bank">${sh(words).map(w=>`<span class="chip" draggable="true">${e(w)}</span>`).join('')}</div>`:'')}
  if(q.t==='vf')return q.it.map((x,k)=>`<div class="vfr${k%2?' z':''}" data-v="${x.v===true?1:0}"><span class="vfl"><span class="vfd">•</span><span>${fm(x.tx)}</span></span><span class="vfb"><button onclick="vfs(this,1)">V</button><button onclick="vfs(this,0)">F</button></span></div>`).join('');
@@ -1598,10 +1598,10 @@ function setcfg(k,x){CUR.cf=CUR.cf||{};CUR.cf[k]=x;save()}
 const NIS=p=>`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`,
 NI={no:NIS('<path d="M4 5h16v14H4zM4 10h16M10 10v9"/>'),ev:NIS('<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>'),al:NIS('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.8 0 4.5 1.8 4.5 4.5"/>'),as:NIS('<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12l2 2 4-4M9 17h6"/>'),re:NIS('<path d="M5 20v-7M11 20V5M17 20v-10M3 20h18"/>')};
 const SUB={as:0},sp=k=>({al:pal,as:pas}[k])().split('\n'),
-navV=()=>`<div class="sbh"><span class="sbl">🎓</span><div><b>Panel docente</b><small>${e(SEDE)}${ME&&ME.n?' · '+e(ME.n):''}</small></div></div><div class="fl mn">${[['ev','Evaluaciones'],['al','Personal'],['re','Resultados'],['no','Notas']].map(([k,n])=>`<button class="fi ${VW===k?'on':''}" onclick="VW='${k}';render()"><span class="fic">${NI[k]}</span><span class="fn">${n}</span></button>`+(VW===k&&SUB[k]!==undefined?sp(k).map((h,i)=>`<button class="fi sbm ${(SUB[k]||0)===i?'on2':''}" onclick="SUB['${k}']=${i};render()"><span class="fn">${((h.match(/<b>([^<]*)<\/b>/)||[])[1]||'Sección').replace(/^\d+ alumnos$/,'Alumnos')}</span></button>`).join(''):'')).join('')}</div>`,nav=()=>`<div class="chips" style="justify-content:center">${[['ev','Evaluaciones'],['al','Personal'],['re','Resultados'],['no','Notas']].map(([k,n])=>`<button class="ch ${VW===k?'on':''}" onclick="VW='${k}';render()">${n}</button>`).join('')}</div>`;
+navV=()=>`<div class="sbh"><span class="sbl">🎓</span><div><b>Panel docente</b><small>${e(SEDE)}${ME&&ME.n?' · '+e(ME.n):''}</small></div></div><div class="fl mn">${[['ev','Evaluaciones'],['asg','Asignaciones'],['al','Personal'],['re','Resultados'],['no','Notas']].map(([k,n])=>`<button class="fi ${VW===k?'on':''}" onclick="VW='${k}';render()"><span class="fic">${NI[k]||NI.as}</span><span class="fn">${n}</span>${k==='asg'?asgBadge():''}</button>`+(VW===k&&SUB[k]!==undefined?sp(k).map((h,i)=>`<button class="fi sbm ${(SUB[k]||0)===i?'on2':''}" onclick="SUB['${k}']=${i};render()"><span class="fn">${((h.match(/<b>([^<]*)<\/b>/)||[])[1]||'Sección').replace(/^\d+ alumnos$/,'Alumnos')}</span></button>`).join(''):'')).join('')}</div>`,nav=()=>`<div class="chips" style="justify-content:center">${[['ev','Evaluaciones'],['asg','Asignaciones'],['al','Personal'],['re','Resultados'],['no','Notas']].map(([k,n])=>`<button class="ch ${VW===k?'on':''}" onclick="VW='${k}';render()">${n}</button>`).join('')}</div>`;
 const lib0=lib;lib=function(){DBi();if(!ROL)return gate();if(M){if(VW!=='ev')return pan();lib0();A.querySelector('.fs').insertAdjacentHTML('afterbegin',navV());return}
  return portal()};
-function pan(){A.innerHTML='<h1>Aula</h1><div class="lb"><aside class="fs">'+navV()+'</aside><section class="ls">'+(VW==='al'?sp('al')[0]:SUB[VW]!==undefined?(sp(VW)[SUB[VW]]||sp(VW)[0]):VW==='no'?notasV():pre())+'</section></div>'}
+function pan(){A.innerHTML='<h1>Aula</h1><div class="lb"><aside class="fs">'+navV()+'</aside><section class="ls">'+(VW==='al'?sp('al')[0]:SUB[VW]!==undefined?(sp(VW)[SUB[VW]]||sp(VW)[0]):VW==='no'?notasV():VW==='asg'?asgPanel():pre())+'</section></div>'}
 const rn0=render;render=function(){DBi();if(!ROL){CUR=null;PLAY=false;ED=false}else if(!M&&CUR&&!RUN){CUR=null;PLAY=false;ED=false}rn0()};
 /* personal */
 /* ===== PERSONAL: registro por filas, lista con fotos, editar, clave (portado del panel de asistencia) ===== */
@@ -1860,12 +1860,13 @@ TMODES=[[0,'✎','Respuesta','El alumno la escribe'],[1,'T','Texto visible','El 
 const hvT=v=>Array.isArray(v)?v.some(hvT):v&&typeof v==='object'?Object.values(v).some(hvT):String(v==null?'':v).replace(/<[^>]*>|&nbsp;/g,' ').trim()!=='';
 /* celda desplegable de la tabla */
 const tdOp=x=>{if(!Array.isArray(x.op)||!x.op.length)x.op=['',''];return x.op};
-function tdEd(x,i,r,c){const op=tdOp(x),n=`tdc${i}_${r}_${c}`,ci=+x.ci||0;
- return `<div class="tdl">${op.map((o,k)=>`<div class="tdr"><input type="radio" class="tdk" name="${n}" title="Marcar como respuesta correcta" ${ci===k?'checked':''} onchange="tdCi(${i},${r},${c},${k})"><input class="tdi" id="${k?n+'_'+k:`tbc${i}_${r}_${c}`}" value="${e(o)}" placeholder="Opción ${k+1}" autocomplete="off" spellcheck="false" oninput="tdIn(${i},${r},${c},${k},this.value)" onkeydown="tdKey(event,${i},${r},${c},${k})"><button type="button" class="tdx" title="Quitar opción" onclick="tdDel(${i},${r},${c},${k})">✕</button></div>`).join('')}<button type="button" class="tdadd" onclick="tdAdd(${i},${r},${c})">+ Opción</button><small>● = respuesta correcta</small></div>`}
+function tdEd(x,i,r,c){const op=tdOp(x),n=`tdc${i}_${r}_${c}`,cs=tdCs(x);
+ return `<div class="tdl">${op.map((o,k)=>`<div class="tdr"><input type="checkbox" class="tdk" title="Marcar como respuesta correcta (puedes marcar varias)" ${cs.includes(k)?'checked':''} onchange="tdCi(${i},${r},${c},${k},this)"><input class="tdi" id="${k?n+'_'+k:`tbc${i}_${r}_${c}`}" value="${e(o)}" placeholder="Opción ${k+1}" autocomplete="off" spellcheck="false" oninput="tdIn(${i},${r},${c},${k},this.value)" onkeydown="tdKey(event,${i},${r},${c},${k})"><button type="button" class="tdx" title="Quitar opción" onclick="tdDel(${i},${r},${c},${k})">✕</button></div>`).join('')}<button type="button" class="tdadd" onclick="tdAdd(${i},${r},${c})">+ Opción</button><small>☑ = respuesta correcta · puedes marcar varias</small></div>`}
 function tdIn(i,r,c,k,v){tdOp(Q(i).g[r][c])[k]=v;save()}
-function tdCi(i,r,c,k){Q(i).g[r][c].ci=k;save()}
+function tdCs(x){const n=tdOp(x).length,a=Array.isArray(x.cs)?x.cs.filter(j=>Number.isInteger(j)&&j>=0&&j<n):[];return a.length?[...new Set(a)].sort((p,q)=>p-q):[Math.min(+x.ci||0,Math.max(0,n-1))]}
+function tdCi(i,r,c,k,el){const x=Q(i).g[r][c];let cs=tdCs(x);const p=cs.indexOf(k);if(p<0)cs.push(k);else if(cs.length>1)cs.splice(p,1);else{if(el)el.checked=true;toast('Deja al menos una respuesta correcta');return}cs.sort((a,b)=>a-b);x.cs=cs;x.ci=cs[0];save()}
 function tdAdd(i,r,c){const o=tdOp(Q(i).g[r][c]);o.push('');save();tbRe(i,`tdc${i}_${r}_${c}_${o.length-1}`)}
-function tdDel(i,r,c,k){const x=Q(i).g[r][c],o=tdOp(x);if(o.length<=2)return toast('Deja al menos 2 opciones');o.splice(k,1);let ci=+x.ci||0;if(k<ci)ci--;else if(k===ci)ci=0;x.ci=ci;save();tbRe(i)}
+function tdDel(i,r,c,k){const x=Q(i).g[r][c],o=tdOp(x);if(o.length<=2)return toast('Deja al menos 2 opciones');const csOld=tdCs(x);o.splice(k,1);const cs0=csOld.filter(z=>z!==k).map(z=>z>k?z-1:z);x.cs=cs0.length?cs0:[0];x.ci=x.cs[0];save();tbRe(i)}
 function tdKey(ev,i,r,c,k){if(ev.key!=='Enter')return;ev.preventDefault();const o=tdOp(Q(i).g[r][c]);if(k===o.length-1){if(String(o[k]).trim())tdAdd(i,r,c)}else{const n=$(`tdc${i}_${r}_${c}_${k+1}`);if(n)n.focus()}}
 function tbG(q){if(!Array.isArray(q.g)||!q.g.length||!Array.isArray(q.g[0]))q.g=tgrid(3,3);return q.g}
 function tbEd(q,i){const g=tbG(q),h=q.h||'b',id=(r,c)=>`tbc${i}_${r}_${c}`,
@@ -1895,6 +1896,8 @@ function tbMenu(ev,i,r,c){ev.stopPropagation();ev.preventDefault();const old=$('
  p.innerHTML=(hdr?'':`<div class="tpl">Tipo de celda</div>`+TMODES.map(([k,ic,n,d])=>`<button class="tpi ${m===k?'on':''}" onclick="tbMode(${i},${r},${c},${k})"><span class="tpc">${ic}</span><span><b>${n}</b><small>${d}</small></span></button>`).join('')+'<hr class="tps">')
   +`<button class="tpi" onclick="tbAdd(${i},0,${r+1})"><span class="tpc">+</span><b>Insertar fila debajo</b></button>`
   +`<button class="tpi" onclick="tbAdd(${i},1,${c+1})"><span class="tpc">+</span><b>Insertar columna a la derecha</b></button>`
+  +`<button class="tpi" onclick="tbDup(${i},0,${r})"><span class="tpc">⧉</span><b>Duplicar fila (con sus respuestas)</b></button>`
+  +`<button class="tpi" onclick="tbDup(${i},1,${c})"><span class="tpc">⧉</span><b>Duplicar columna</b></button>`
   +`<button class="tpi dg" onclick="tbDel(${i},0,${r})"><span class="tpc">✕</span><b>Quitar fila</b></button>`
   +`<button class="tpi dg" onclick="tbDel(${i},1,${c})"><span class="tpc">✕</span><b>Quitar columna</b></button>`;
  document.body.appendChild(p);
@@ -1924,7 +1927,7 @@ function pqt(q){const g=tbG(q),h=q.h||'b',
  return `<div class="tbw"><table class="tbl">${R0.map(r=>{const row=g[r];return `<tr>${C0.map(c=>{const x=row[c],t=String(x.tx||'').trim();
   if(tbH(q,r,c))return r===0&&(h==='r'||h==='b')?`<th class="hc">${fm(t)}</th>`:`<th class="hl">${fm(t)}</th>`;
   if(x.f===2)return `<td class="tgy"></td>`;
-  if(x.f===3){const o0=(x.op||[]).map(o=>String(o).trim().replace(/\|/g,'/')),a=o0[+x.ci||0]||'',op=sh(o0.filter(Boolean));if(!a||op.length<2)return '<td></td>';return `<td class="tds"><select class="gp tsel" data-a="${e(a)}"><option value="">Elegir…</option>${op.map(o=>`<option>${e(o)}</option>`).join('')}</select></td>`}
+  if(x.f===3){const o0=(x.op||[]).map(o=>String(o).trim().replace(/\|/g,'/')),a=o0.filter((o,k)=>o&&tdCs(x).includes(k)).join('|'),op=sh(o0.filter(Boolean));if(!a||op.length<2)return '<td></td>';return `<td class="tds"><select class="gp tsel" data-a="${e(a)}"><option value="">Elegir…</option>${op.map(o=>`<option>${e(o)}</option>`).join('')}</select></td>`}
   return !x.f&&t?`<td><input class="gp tbi" data-a="${e(x.tx)}" autocomplete="off" spellcheck="false"></td>`:`<td>${fm(t)}</td>`}).join('')}</tr>`}).join('')}</table></div>`}
 /* ===== ARRASTRAR IMÁGENES: cuadros editables con color (bote de pintura) ===== */
 const PCOL=['#3f3f3f','#16335f','#2b64b8','#0e7490','#06621c','#16a34a','#ca8a04','#ea580c','#e11d48','#be185d','#7c3aed','#475569'],
@@ -1941,29 +1944,18 @@ function parAdd(i){const q=Q(i);q.it.push({img:'',tx:'',r:''});save();edit(CUR);
 async function parDel(i,j){palClose();const x=Q(i).it[j]||{};if(hvT({img:x.img,tx:x.tx,r:x.r,c:x.c,op:x.op})&&!await dlg({t:'¿Quitar este casillero?',m:'Tiene imagen, texto o respuesta escrita y se perderá.',ok:'Quitar',danger:1}))return;Q(i).it.splice(j,1);save();edit(CUR)}
 function parCol(i,j,c){Q(i).it[j].col=c;save();const el=$('cse'+i+'_'+j);if(el){const s=ccv(c);s?el.setAttribute('style',s):el.removeAttribute('style')}}
 function nomCell(q,i,j,x){const s=ccv(x.col);
- return `<div class="cs cse" id="cse${i}_${j}"${s?` style="${s}"`:''}><div class="cstb"><button type="button" class="cib" title="Mover a la izquierda" ${j===0?'disabled':''} onclick="mvj(${i},${j},-1)">${ICL}</button><button type="button" class="cib" title="Mover a la derecha" ${j>=q.it.length-1?'disabled':''} onclick="mvj(${i},${j},1)">${ICR}</button><button type="button" class="cib pt" title="Color del cuadro (bote de pintura)" onclick="parPal(event,${i},${j})">${IPT}</button><button type="button" class="cib dl" title="Quitar" onclick="parDel(${i},${j})">${ICX}</button></div><label class="cim">${x.img?`<img src="${x.img}">`:'<span>+ Imagen</span>'}<input type="file" accept="image/*" hidden onchange="img(this,${i},${j})"></label><div class="nmt"><input placeholder="o escribe un texto" value="${e(x.tx||'')}" autocomplete="off" oninput="Q(${i}).it[${j}].tx=this.value;save()"></div><div class="csl"><button type="button" class="nmr${x.r?'':' vac'}" title="Elegir si el alumno escribe la palabra o la elige de una lista" onclick="nomAns(${i},${j})">${x.r?`${e(x.r)}${(x.m||q.m||'esc')==='lis'?' <small>▾ lista</small>':''}`:'Clic para editar la respuesta correcta'}</button></div><div class="cd"><span>CÓDIGO</span><input placeholder="opcional" maxlength="6" value="${e(x.c||'')}" autocomplete="off" spellcheck="false" oninput="Q(${i}).it[${j}].c=this.value.trim();save()"></div></div>`}
-function nomAns(i,j){const q=Q(i),x=q.it[j],w=document.createElement('div');w.className='mdl';w.tabIndex=-1;
- let m=(x.m||q.m||'esc')==='lis'?'lis':'esc',word=String(x.r||''),op=Array.isArray(x.op)&&x.op.length?x.op.map(String):[word,''],ci=Number.isInteger(x.ci)&&x.ci<op.length?x.ci:0;
- while(op.length<2)op.push('');
- w.innerHTML=`<div class="mbx exm"><b>Respuesta del casillero</b><div class="qcr" style="margin:10px 0"><button type="button" class="qtg" data-a="esc">Escribe la palabra</button><button type="button" class="qtg" data-a="lis">Elige de la lista</button></div><div class="nmw"></div><small class="nme" style="display:none;color:#e11d48;font-weight:700;margin:6px 0"></small><div class="row" style="justify-content:flex-end;margin-top:10px"><button type="button" class="bt w" data-a="no">Cancelar</button><button type="button" class="bt" data-a="ok">Guardar</button></div></div>`;
- const W=w.querySelector('.nmw'),ER=w.querySelector('.nme'),end=()=>w.remove(),err=t=>{ER.textContent=t;ER.style.display='block'},
- draw=(f)=>{ER.style.display='none';w.querySelectorAll('.qtg').forEach(b=>b.classList.toggle('on',b.dataset.a===m));
-  if(m==='esc'){W.innerHTML=`<input class="nmi" data-w="1" placeholder="Palabra correcta" value="${e(word)}" autocomplete="off"><small class="hint" style="display:block;margin-top:6px">Puedes poner varias válidas separadas con |</small>`;const n=W.querySelector('input');if(f!==false)n.focus()}
-  else{W.innerHTML=`<div class="exl2">${op.map((o,k)=>`<div class="exmr"><button type="button" class="mct${k===ci?' on':''}" data-k="${k}" title="Marcar como correcta">${k===ci?'✔ Correcta':'Marcar'}</button><input data-o="${k}" placeholder="Opción ${k+1}" value="${e(o)}" autocomplete="off"><button type="button" class="x" data-d="${k}" title="Quitar">✕</button></div>`).join('')}</div><div class="row"><button type="button" class="bt w" data-a="add">+ Opción</button></div>`;if(f==='last'){const n=W.querySelectorAll('input');n[n.length-1].focus()}}};
- w.oninput=ev=>{const t=ev.target;if(t.dataset.w)word=t.value;else if(t.dataset.o!==undefined)op[+t.dataset.o]=t.value;ER.style.display='none'};
- w.onclick=ev=>{if(ev.target===w)return end();const b=ev.target.closest('button');if(!b||!w.contains(b))return;
-  if(b.dataset.k!==undefined){ci=+b.dataset.k;draw(false);return}
-  if(b.dataset.d!==undefined){const k=+b.dataset.d;if(op.length>2){op.splice(k,1);if(ci===k)ci=0;else if(ci>k)ci--}else op[k]='';draw(false);return}
-  const a=b.dataset.a;
-  if(a==='esc'||a==='lis'){if(a===m)return;if(a==='lis'&&!op.some(o=>String(o).trim())&&word.trim())op[0]=word.trim();m=a;draw()}
-  else if(a==='add'){op.push('');draw('last')}
-  else if(a==='no')end();
-  else if(a==='ok'){
-   if(m==='esc'){const t=word.trim();if(!t)return err('Escribe la palabra correcta.');x.m='esc';x.r=t}
-   else{const L=op.map((o,k)=>({t:String(o).trim(),c:k===ci})).filter(z=>z.t);if(L.length<2)return err('Escribe al menos 2 opciones.');const k=L.findIndex(z=>z.c);if(k<0)return err('Marca cuál es la correcta.');x.m='lis';x.op=L.map(z=>z.t);x.ci=k;x.r=L[k].t}
-   save();end();edit(CUR)}};
- w.onkeydown=ev=>{if(ev.key==='Escape')end();else if(ev.key==='Enter'&&ev.target.dataset.w){ev.preventDefault();w.querySelector('[data-a="ok"]').click()}};
- draw();document.body.appendChild(w)}
+ return `<div class="cs cse" id="cse${i}_${j}"${s?` style="${s}"`:''}><div class="cstb"><button type="button" class="cib" title="Mover a la izquierda" ${j===0?'disabled':''} onclick="mvj(${i},${j},-1)">${ICL}</button><button type="button" class="cib" title="Mover a la derecha" ${j>=q.it.length-1?'disabled':''} onclick="mvj(${i},${j},1)">${ICR}</button><button type="button" class="cib pt" title="Color del cuadro (bote de pintura)" onclick="parPal(event,${i},${j})">${IPT}</button><button type="button" class="cib dl" title="Quitar" onclick="parDel(${i},${j})">${ICX}</button></div><label class="cim">${x.img?`<img src="${x.img}">`:'<span>+ Imagen</span>'}<input type="file" accept="image/*" hidden onchange="img(this,${i},${j})"></label><div class="nmt"><input placeholder="o escribe un texto" value="${e(x.tx||'')}" autocomplete="off" oninput="Q(${i}).it[${j}].tx=this.value;save()"></div><div class="csl"><button type="button" class="nmr${x.r?'':' vac'}" title="Elegir si el alumno escribe la palabra o la elige de una lista" onclick="nomAns(${i},${j})">${x.r?`${e(String(x.r).split('|').map(z=>z.trim()).join(' / '))}${(x.m||q.m||'esc')==='lis'?' <small>▾ lista</small>':''}`:'Clic para editar la respuesta correcta'}</button></div><div class="cd"><span>CÓDIGO</span><input placeholder="opcional" maxlength="6" value="${e(x.c||'')}" autocomplete="off" spellcheck="false" oninput="Q(${i}).it[${j}].c=this.value.trim();save()"></div></div>`}
+function nomAns(i,j){const q=Q(i),x=q.it[j];
+ const m=(x.m||q.m||'esc')==='lis'?'lis':'esc',cfg={title:'Respuesta del casillero',m},ps=String(x.r||'').split('|').map(z=>z.trim());
+ cfg.main=ps[0]||'';cfg.alts=m==='esc'?ps.slice(1).filter(Boolean):[];
+ cfg.op=Array.isArray(x.op)&&x.op.length?x.op.map(String):[ps[0]||'',''];
+ const n=cfg.op.length;cfg.cs=Array.isArray(x.cs)&&x.cs.length?x.cs.filter(k=>k<n):[Number.isInteger(x.ci)&&x.ci<n?x.ci:0];
+ if(!cfg.cs.length)cfg.cs=[0];
+ cfg.onOk=res=>{
+  if(res.m==='esc'){x.m='esc';x.r=res.words.join('|');delete x.cs}
+  else{const ix=res.L.map((z,k)=>z.c?k:-1).filter(k=>k>=0);x.m='lis';x.op=res.L.map(z=>z.t);x.cs=ix;x.ci=ix[0];x.r=res.L.filter(z=>z.c).map(z=>z.t).join('|')}
+  save();edit(CUR)};
+ window.evqAns(cfg)}
 function nomAdd(i){const q=Q(i);q.it.push({img:'',tx:'',r:'',c:''});save();edit(CUR);const n=document.querySelector('#cse'+i+'_'+(q.it.length-1)+' .cim');if(n){n.scrollIntoView({block:'nearest'})}}
 function qhn(q,i){if(!Array.isArray(q.it)||!q.it.length)q.it=[{img:'',tx:'',r:'',c:''}];
  return `<div class="box"><div class="row" style="margin:0"><span class="tag">${i+1}</span><b style="flex:1">${NM[q.t]}</b>${hdb(i)}</div><input placeholder="Consigna (qué debe hacer el alumno)" value="${e(q.ins)}" oninput="Q(${i}).ins=this.value;save()"><div class="cj cje">${q.it.map((x,j)=>nomCell(q,i,j,x)).join('')}<button type="button" class="cs csn" onclick="nomAdd(${i})">+ Imagen y casillero</button></div><small class="hint" style="display:block;margin-top:10px">Pon una imagen o un texto y toca la franja de abajo para decidir si el alumno escribe la palabra o la elige de una lista. Si escribes un código, el alumno también deberá escribirlo.</small></div>`}
@@ -2759,8 +2751,8 @@ function asgDraw(){if(!ASG)return;const v=DB.evals.find(x=>x.id===ASG.e);if(!v)r
    :`<p class="lk">Aún no hay grupos. Créalos en <b>Personal</b> y asigna a cada asesor su grupo.</p>`}
  else{const L=DB.al.filter(a=>a.g===g.id).sort((a,b)=>a.n.localeCompare(b.n,'es')),l=asgLive(v.id,g.id);
   body=`<div class="asgt"><button type="button" class="bt w sm" onclick="asgBack()">← Grupos</button><b>${e(g.n)}</b>${l?`<span class="asgs${l.go?' on':''}">${asgSt(l)}</span>`:''}</div>`
-   +(L.length?asgCfg(l):'')
-   +(L.length?`<div class="asgq"><input type="search" id="asgq" placeholder="Buscar alumno por nombre, DNI o área…" value="${e(ASG.q||'')}" oninput="asgFilt(this.value)" autocomplete="off"><small id="asgqn"></small></div><label class="asga"><input type="checkbox" id="asgall" onchange="asgAll(this.checked)"><span>Marcar / desmarcar todos</span><small id="asgn"></small></label><div class="asgl">${L.map(a=>`<div class="asgw" data-q="${e(asgN(a.n+' '+(a.c||'')+' '+(a.a||'')))}"><label class="asgr${asgAct(a)?'':' asgoff'}"${asgAct(a)?'':' title="Solo se puede asignar a asesores con estado ACTIVO"'}><input type="checkbox" data-i="${a.id}" onchange="asgTog('${a.id}',this.checked)"${asgAct(a)?(ASG.sel.has(a.id)?' checked':''):' disabled'}>${asgAv(a,36)}<span class="asgnm"><b>${e(a.n)}</b><small>${e(a.a||'')}${a.c?' · DNI '+e(a.c):''}</small></span>${asgAct(a)?asgIn(l,a):`<span class="asgat">${e(a.e||'Sin estado')}</span>`}</label></div>`).join('')}</div><p class="lk" id="asgnr" style="display:none">Ningún alumno coincide con la búsqueda.</p>`:`<p class="lk">Este grupo no tiene alumnos.</p>`);
+   +(L.length?asgCfg(l)+asgWarn(L):'')
+   +(L.length?`<div class="asgq"><input type="search" id="asgq" placeholder="Buscar alumno por nombre, DNI o área…" value="${e(ASG.q||'')}" oninput="asgFilt(this.value)" autocomplete="off"><small id="asgqn"></small></div><label class="asga"><input type="checkbox" id="asgall" onchange="asgAll(this.checked)"><span>Marcar / desmarcar todos</span><small id="asgn"></small></label><div class="asgl">${L.map(a=>`<div class="asgw" data-q="${e(asgN(a.n+' '+(a.c||'')+' '+(a.a||'')))}"><label class="asgr${asgAct(a)?'':' asgoff'}"${asgAct(a)?'':' title="Solo se puede asignar a asesores con estado ACTIVO"'}><input type="checkbox" data-i="${a.id}" onchange="asgTog('${a.id}',this.checked)"${asgAct(a)?(ASG.sel.has(a.id)?' checked':''):' disabled'}>${asgAv(a,36)}<span class="asgnm"><b>${e(a.n)}</b><small>${e(a.a||'')}${a.c?' · DNI '+e(a.c):''}</small></span>${asgAct(a)?asgPv(a.id)+asgIn(l,a):`<span class="asgat">${e(a.e||'Sin estado')}</span>`}</label></div>`).join('')}</div><p class="lk" id="asgnr" style="display:none">Ningún alumno coincide con la búsqueda.</p>`:`<p class="lk">Este grupo no tiene alumnos.</p>`);
   foot=L.length?`${l?`<div style="margin-right:auto;display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="bt w dz2" onclick="asgQuitar('${l.id}')">Quitar asignación</button>${l.i?`<button type="button" class="bt w" onclick="asgItOpen()">Dar o quitar intentos</button>`:''}</div>`:''}<button type="button" class="bt" id="asgdo" onclick="asgDo(0)">Asignar</button><button type="button" class="bt go" id="asgstart" onclick="asgDo(1)"${l&&l.go?' disabled':''}>${l&&l.go?'Examen iniciado ✔':'Comenzar examen'}</button>`:''}
  body+=asgOld(v);
  m.innerHTML=`<div class="mbx asgbx"><div class="asgh"><div><b>Asignar examen</b><small>${e(v.n)} · ${v.qs.length} pregunta${v.qs.length===1?'':'s'}</small></div><button type="button" class="x" onclick="asgClose()" aria-label="Cerrar">✕</button></div><div class="asgb">${body}</div>${foot?`<div class="asgf">${foot}</div>`:''}</div>`;
@@ -2783,6 +2775,10 @@ async function asgDo(start){if(!ASG||!ASG.g)return;
  const oc=asgOcultos();
  if(oc>0&&!await dlg({t:'Hay alumnos marcados que no estás viendo',m:'La búsqueda oculta a '+oc+' alumno'+(oc===1?'':'s')+' que siguen marcados. Se '+(start?'comenzará el examen':'asignará')+' a los '+ids.length+' marcados, no solo a los que ves. ¿Continuar?',ok:'Sí, continuar'}))return;
  if(!ASG)return;
+ const a0=asgLive(ASG.e,ASG.g),inA=new Set(a0?a0.l||[]:[]),dup=ids.filter(id=>!inA.has(id)&&asgPrev(id));
+ if(dup.length){const nm=dup.map(id=>(DB.al.find(x=>x.id===id)||{}).n||'').slice(0,6).join(', ')+(dup.length>6?' y '+(dup.length-6)+' más':'');
+  if(!await dlg({t:dup.length+' alumno'+(dup.length===1?'':'s')+' ya tuvo'+(dup.length===1?'':'ieron')+' este examen',m:nm+'. Si sigues, se les asignará otra vez. ¿Continuar?',ok:'Sí, asignar igual'}))return;
+  if(!ASG)return}
  const otro=DB.as.find(x=>x.t==='l'&&x.live&&!x.cl&&x.w===ASG.g&&x.e!==ASG.e);
  if(otro){const vo=DB.evals.find(v=>v.id===otro.e);await dlg({t:'Este grupo ya tiene un examen asignado',m:'«'+(vo?vo.n:'otro examen')+'» sigue asignado a este grupo. Ve a «Asignaciones» y márcalo como terminado antes de asignar otro.',nc:1,ok:'Entendido'});return}
  let a=asgLive(ASG.e,ASG.g);
@@ -2825,7 +2821,48 @@ async function asgTerm(id){const v=DB.evals.find(x=>x.id===id);if(!v)return;cons
  const t=Date.now();L.forEach(a=>{a.cl=t});
  const ok=await asgPersist('Terminando el examen…','Estamos cerrando las asignaciones de este examen para todos los alumnos. Puede tardar unos segundos; no cierres esta ventana.');
  if(!ok)L.forEach(a=>{delete a.cl});
- asgvDraw();if(ok)toast('Examen terminado ✔')}
+ if($('asgv'))asgvDraw();if(VW==='asg')render();if(ok)toast('Examen terminado ✔')}
+
+/* v46: menú «Asignaciones» con filtros + aviso de examen ya asignado */
+var AGF={q:'',s:'open',g:'',e:''};
+function asgTarget(a){const gn=(DB.gr.find(g=>g.id===a.w)||{}).n||'(eliminado)';
+ return a.t==='l'||a.t==='g'?'Grupo '+gn:a.t==='a'?(a.w==='*'?'Toda la sede':'Área '+a.w):'Individual: '+((DB.al.find(x=>x.id===a.w)||{}).n||'(eliminado)')}
+function asgInfo(a){const v=DB.evals.find(x=>x.id===a.e);if(!v)return null;
+ const T=tg(a),S=T.map(x=>[x,stt(a,x.id)]);
+ return{a,v,to:asgTarget(a),n:T.length,rind:S.filter(p=>p[1].R&&p[1].R.length).length,pend:S.filter(p=>p[1].s==='p').map(p=>p[0]),
+  st:a.cl?'cl':a.live&&!a.go?'wait':a.live?'run':'open'}}
+const ASGST={cl:['Terminada','cl'],wait:['Esperando inicio',''],run:['En curso','on'],open:['Abierta','']};
+function asgBadge(){let n=0;try{n=DB.as.filter(a=>!a.cl).map(asgInfo).filter(r=>r&&r.pend.length).length}catch(x){}return n?`<span class="fcn">${n}</span>`:''}
+function asgpRows(){const q=asgN(AGF.q).trim();
+ return DB.as.map(asgInfo).filter(r=>{if(!r)return false;
+  if(AGF.s==='open'&&r.st==='cl')return false;if(AGF.s==='pend'&&(r.st==='cl'||!r.pend.length))return false;
+  if(AGF.s==='wait'&&r.st!=='wait')return false;if(AGF.s==='run'&&r.st!=='run')return false;if(AGF.s==='cl'&&r.st!=='cl')return false;
+  if(AGF.g&&r.a.w!==AGF.g)return false;if(AGF.e&&r.a.e!==AGF.e)return false;
+  if(q&&!asgN(r.v.n+' '+r.to+' '+r.pend.map(x=>x.n).join(' ')).includes(q))return false;return true})
+ .sort((x,y)=>(x.st==='cl')-(y.st==='cl')||y.pend.length-x.pend.length)}
+function asgpTable(){const R=asgpRows();
+ if(!R.length)return '<p class="lk">'+(DB.as.length?'Ninguna asignación coincide con los filtros.':'No hay exámenes asignados.')+'</p>';
+ return `<div style="overflow-x:auto"><table class="gt"><tr><th>Examen</th><th>Asignado a</th><th>Estado</th><th>Rindieron</th><th>Pendientes</th><th>Vence</th><th></th></tr>${R.map(r=>{const s=ASGST[r.st];
+  return `<tr><td><b>${e(r.v.n)}</b></td><td>${e(r.to)}</td><td><span class="asgs ${s[1]}">${s[0]}</span></td><td>${r.rind}/${r.n}</td><td>${r.pend.length?`<details class="asgpd"><summary>${r.pend.length}</summary><div>${r.pend.map(x=>e(x.n)).join(', ')}</div></details>`:'0'}</td><td>${r.a.d?e(r.a.d):'—'}</td><td style="white-space:nowrap">${r.st==='cl'?'':`${r.a.t==='l'?`<button class="bt w sm" onclick="asgOpen('${r.a.e}');asgPick('${r.a.w}')">Abrir</button> `:''}<button class="bt w sm dz2" onclick="asgTerm('${r.a.e}')">Terminar</button>`}</td></tr>`}).join('')}</table></div>`}
+function asgpTb(){const t=$('asgtb');if(t)t.innerHTML=asgpTable()}
+function asgPanel(){const all=DB.as.map(asgInfo).filter(Boolean),ab=all.filter(r=>r.st!=='cl'),pe=ab.filter(r=>r.pend.length).length,
+ ex=DB.evals.filter(v=>DB.as.some(a=>a.e===v.id)),fl=!!(AGF.q||AGF.g||AGF.e||AGF.s!=='open');
+ return `<div class="rh"><div class="rh-t"><div><h2>Asignaciones</h2><p>${ab.length} abierta${ab.length===1?'':'s'} · ${pe} con alumnos pendientes</p></div></div>
+<div class="rh-f"><input type="search" class="rq" placeholder="🔍 Buscar examen, grupo o alumno" value="${e(AGF.q)}" oninput="AGF.q=this.value;asgpTb()"><select onchange="AGF.s=this.value;render()">${[['open','Abiertas'],['pend','Con pendientes'],['wait','Esperando inicio'],['run','En curso'],['cl','Terminadas'],['all','Todas']].map(([k,n])=>`<option value="${k}" ${AGF.s===k?'selected':''}>${n}</option>`).join('')}</select><select onchange="AGF.g=this.value;render()"><option value="">Todos los grupos</option>${DB.gr.map(g=>`<option value="${g.id}" ${AGF.g===g.id?'selected':''}>${e(g.n)}</option>`).join('')}</select><select onchange="AGF.e=this.value;render()"><option value="">Todos los exámenes</option>${ex.map(v=>`<option value="${v.id}" ${AGF.e===v.id?'selected':''}>${e(v.n)}</option>`).join('')}</select>${fl?'<button class="bt w sm" onclick="AGF={q:\'\',s:\'open\',g:\'\',e:\'\'};render()">Limpiar</button>':''}</div></div><div id="asgtb">${asgpTable()}</div>`}
+/* ¿este alumno ya tuvo este examen? (ignora la asignación del grupo que se está editando) */
+function asgPrev(sid){if(!ASG)return null;const cur=ASG.g?asgLive(ASG.e,ASG.g):null,
+ L=DB.as.filter(a=>a.e===ASG.e&&(!cur||a.id!==cur.id)&&tg(a).some(x=>x.id===sid));if(!L.length)return null;
+ const ids=new Set(L.map(a=>a.id)),R=DB.rs.filter(r=>r.al===sid&&ids.has(r.as)),F=R.filter(r=>r.n!=null);
+ return{open:L.filter(a=>!a.cl).length,n:R.length,best:F.length?Math.max(...F.map(r=>r.n)):null}}
+function asgPv(sid){const p=asgPrev(sid);if(!p)return'';
+ const t=p.n?'Ya rindió'+(p.best!=null?' · '+p.best.toFixed(1):''):(p.open?'Ya asignado':'Asignado antes');
+ const tt=(p.open?'Tiene este examen asignado en otra asignación abierta':'Tuvo este examen en una asignación ya terminada')+(p.n?' · '+p.n+' intento'+(p.n===1?'':'s'):'');
+ return `<span class="asgpv${p.n?' r':''}" title="${e(tt)}">${t}</span>`}
+function asgWarn(L){const n=L.filter(a=>asgAct(a)&&asgPrev(a.id)).length;if(!n)return'';
+ return `<div class="asgwn"><span>⚠ ${n} alumno${n===1?'':'s'} ya tuvo${n===1?'':'ieron'} este examen antes</span><button type="button" class="bt w sm" onclick="asgDesPrev()">Desmarcarlos</button></div>`}
+function asgDesPrev(){if(!ASG||!ASG.g)return;const cur=asgLive(ASG.e,ASG.g),inL=new Set(cur?cur.l||[]:[]);let n=0;
+ document.querySelectorAll('#asgm .asgr input[data-i]:not(:disabled)').forEach(b=>{const id=b.dataset.i;if(b.checked&&!inL.has(id)&&asgPrev(id)){b.checked=false;ASG.sel.delete(id);n++}});
+ asgSync();toast(n?n+' desmarcado'+(n===1?'':'s'):'Ya estaban sin marcar')}
 
 /* alumno: pantalla de espera hasta que el capacitador comience el examen */
 const pt0=portal,
@@ -3168,15 +3205,38 @@ addEventListener('beforeunload',ev=>{if(inEd()&&dirty()){ev.preventDefault();ev.
     if(finish){ finish.textContent = 'Finalizar'; finish.title = 'Finalizar edición'; }
   }
 
+  let toolH = null; /* null = desplegada al máximo por defecto */
+  function toolLimits(){ const mx = Math.max(380, window.innerHeight - 66); return [Math.min(380, mx), mx]; }
+
   function ensureToolExpand(){
     const side = document.querySelector('#app>.ed>.side');
-    const tl = side && side.querySelector('#tl');
-    if(!side || !tl) return;
-    if(!side.querySelector('.tool-expand')){
-      const controls = document.createElement('div');
-      controls.className = 'tool-expand';
-      controls.innerHTML = '<button type="button" class="tool-expand-btn" onclick="tbToolsResize(1)" title="Ampliar la caja de herramientas hacia abajo" aria-label="Ampliar la caja de herramientas hacia abajo">⌄</button><button type="button" class="tool-expand-btn" onclick="tbToolsResize(-1)" title="Reducir la altura de la caja de herramientas" aria-label="Reducir la altura de la caja de herramientas">⌃</button>';
-      tl.insertAdjacentElement('afterend', controls);
+    if(!side) return;
+    side.querySelectorAll('.tool-expand').forEach(n => n.remove());
+    if(!side.querySelector('.tool-grip')){
+      const g = document.createElement('div');
+      g.className = 'tool-grip';
+      g.title = 'Jala para cambiar el alto de la caja';
+      g.setAttribute('aria-label','Jala para cambiar el alto de la caja de herramientas');
+      g.innerHTML = '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M14 4L4 14M14 8.5L8.5 14M14 13L13 14"/></svg>';
+      g.addEventListener('pointerdown', function(ev){
+        ev.preventDefault();
+        const y0 = ev.clientY, h0 = side.getBoundingClientRect().height;
+        try{ g.setPointerCapture(ev.pointerId); }catch(err){}
+        const mv = function(ev2){
+          const lim = toolLimits();
+          toolH = Math.max(lim[0], Math.min(lim[1], h0 + (ev2.clientY - y0)));
+          updateToolExpand();
+        };
+        const up = function(){
+          g.removeEventListener('pointermove', mv);
+          g.removeEventListener('pointerup', up);
+          g.removeEventListener('pointercancel', up);
+        };
+        g.addEventListener('pointermove', mv);
+        g.addEventListener('pointerup', up);
+        g.addEventListener('pointercancel', up);
+      });
+      side.appendChild(g);
     }
     updateToolExpand();
   }
@@ -3189,23 +3249,11 @@ addEventListener('beforeunload',ev=>{if(inEd()&&dirty()){ev.preventDefault();ev.
       side.style.maxHeight = '';
       return;
     }
-    const base = Math.max(380, window.innerHeight - 120);
-    const max = Math.max(380, window.innerHeight - 66);
-    const extra = Math.max(0, Math.min(toolExtraHeight, max - base));
-    toolExtraHeight = extra;
-    side.style.height = Math.min(max, base + extra) + 'px';
-    side.style.maxHeight = max + 'px';
-    const controls = side.querySelector('.tool-expand');
-    if(controls){
-      const [down,up] = controls.querySelectorAll('button');
-      if(down) down.disabled = base + extra >= max - 1;
-      if(up) up.disabled = extra <= 0;
-    }
+    const lim = toolLimits();
+    const h = toolH == null ? lim[1] : Math.max(lim[0], Math.min(lim[1], toolH));
+    side.style.height = h + 'px';
+    side.style.maxHeight = lim[1] + 'px';
   }
-  window.tbToolsResize = function(direction){
-    toolExtraHeight = Math.max(0, toolExtraHeight + (direction > 0 ? 36 : -36));
-    updateToolExpand();
-  };
 
   function syncEvaluationDesign(){
     try{
@@ -3491,40 +3539,14 @@ const H=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>
  cln=x=>String(x).replace(/[\[\]|¦]/g,'').replace(/^\s*[*~]+/,'').trim();
 function holeAns(p){
  const inp=p.querySelector('input'),d=p.closest('.rt');if(!inp||!d)return;const i=+d.dataset.i,raw=inp.dataset.l||'';
- let m=raw?'lis':'esc',word=raw?'':inp.value,op=[],ci=0;
- if(raw){const o=hlP(raw);op=o.l.slice();ci=o.k<0?0:o.k}
- while(op.length<2)op.push('');
- const w=document.createElement('div');w.className='mdl';w.tabIndex=-1;
- w.innerHTML='<div class="mbx exm"><b>Respuesta del casillero</b><div class="qcr" style="margin:10px 0"><button type="button" class="qtg" data-a="esc">Escribe la palabra</button><button type="button" class="qtg" data-a="lis">Elige de la lista</button></div><div class="nmw"></div><small class="nme" style="display:none;color:#e11d48;font-weight:700;margin:6px 0"></small><div class="row" style="justify-content:flex-end;margin-top:10px"><button type="button" class="bt w" data-a="no">Cancelar</button><button type="button" class="bt" data-a="ok">Guardar</button></div></div>';
- const W=w.querySelector('.nmw'),ER=w.querySelector('.nme'),end=()=>w.remove(),err=t=>{ER.textContent=t;ER.style.display='block'},
- draw=f=>{ER.style.display='none';w.querySelectorAll('.qtg').forEach(b=>b.classList.toggle('on',b.dataset.a===m));
-  if(m==='esc'){W.innerHTML='<input class="nmi" data-w="1" placeholder="Palabra correcta" value="'+H(word)+'" autocomplete="off"><small class="hint" style="display:block;margin-top:6px">Puedes poner varias válidas separadas con |</small>';if(f!==false)W.querySelector('input').focus()}
-  else{W.innerHTML='<div class="exl2">'+op.map((o,k)=>'<div class="exmr"><button type="button" class="mct'+(k===ci?' on':'')+'" data-k="'+k+'" title="Marcar como correcta">'+(k===ci?'✔ Correcta':'Marcar')+'</button><input data-o="'+k+'" placeholder="Opción '+(k+1)+'" value="'+H(o)+'" autocomplete="off"><button type="button" class="x" data-d="'+k+'" title="Quitar">✕</button></div>').join('')+'</div><div class="row"><button type="button" class="bt w" data-a="add">+ Opción</button></div><small class="hint" style="display:block;margin-top:6px">El alumno verá todas las opciones mezcladas en un desplegable.</small>';
-   if(f==='last'){const n=W.querySelectorAll('input');n[n.length-1].focus()}else if(f!==false){const n=W.querySelector('input');if(n)n.focus()}}};
- w.oninput=ev=>{const t=ev.target;if(t.dataset.w)word=t.value;else if(t.dataset.o!==undefined)op[+t.dataset.o]=t.value;ER.style.display='none'};
- w.onclick=ev=>{if(ev.target===w)return end();const b=ev.target.closest('button');if(!b||!w.contains(b))return;
-  if(b.dataset.k!==undefined){ci=+b.dataset.k;draw(false);return}
-  if(b.dataset.d!==undefined){const k=+b.dataset.d;if(op.length>2){op.splice(k,1);if(ci===k)ci=0;else if(ci>k)ci--}else op[k]='';draw(false);return}
-  const a=b.dataset.a;
-  if(a==='esc'||a==='lis'){if(a===m)return;
-   if(a==='lis'&&!op.some(o=>String(o).trim())&&word.trim())op[0]=word.split('|')[0].trim();
-   if(a==='esc'&&!word.trim()&&String(op[ci]||'').trim())word=String(op[ci]).trim();
-   m=a;draw()}
-  else if(a==='add'){op.push('');draw('last')}
-  else if(a==='no')end();
-  else if(a==='ok'){
-   if(m==='esc'){const t=word.replace(/[\[\]¦]/g,'').replace(/^\s*[*~]+/,'').trim();if(!t)return err('Escribe la palabra correcta.');
-    delete inp.dataset.l;inp.readOnly=false;p.classList.remove('lst');inp.value=t}
-   else{const L=op.map((o,k)=>({t:cln(o),c:k===ci})).filter(z=>z.t);
-    if(L.length<2)return err('Escribe al menos 2 opciones.');
-    if(new Set(L.map(z=>z.t.toLowerCase())).size<L.length)return err('Hay opciones repetidas.');
-    const k=L.findIndex(z=>z.c);if(k<0)return err('Marca cuál es la correcta.');
-    inp.dataset.l='~'+L.map(z=>(z.c?'*':'')+z.t).join('¦');inp.readOnly=true;p.classList.add('lst');inp.value=L[k].t}
-   pfix(inp);commit(i,d);end()}};
- w.onkeydown=ev=>{if(ev.key==='Escape'){ev.stopPropagation();end()}
-  else if(ev.key==='Enter'&&ev.target.dataset.w){ev.preventDefault();w.querySelector('[data-a="ok"]').click()}
-  else if(ev.key==='Enter'&&ev.target.dataset.o!==undefined){ev.preventDefault();op.push('');draw('last')}};
- draw();document.body.appendChild(w)}
+ const cfg={title:'Respuesta del casillero'};
+ if(raw){const o=hlP(raw);cfg.m='lis';cfg.op=o.l.slice();cfg.cs=o.ks.length?o.ks:[0]}
+ else{const ps=String(inp.value||'').split('|').map(z=>z.trim());cfg.m='esc';cfg.main=ps[0]||'';cfg.alts=ps.slice(1).filter(Boolean)}
+ cfg.onOk=res=>{
+  if(res.m==='esc'){delete inp.dataset.l;inp.readOnly=false;p.classList.remove('lst');inp.value=res.words.join('|')}
+  else{inp.dataset.l='~'+res.L.map(z=>(z.c?'*':'')+z.t).join('¦');inp.readOnly=true;p.classList.add('lst');inp.value=res.L.filter(z=>z.c).map(z=>z.t).join(' / ')}
+  pfix(inp);commit(i,d)};
+ window.evqAns(cfg)}
 window.holeAns=holeAns;
 document.addEventListener('click',ev=>{const t=ev.target;if(!t||!t.closest)return;const p=t.closest('#ql .rt:not(.rr) .pl');if(!p)return;
  if(t===p||(t.tagName==='INPUT'&&p.classList.contains('lst'))){ev.preventDefault();holeAns(p)}},true);
@@ -3729,4 +3751,287 @@ addQ0=function(t){
 };
 })();
 </script>
+<style id="v70-css">
+/* ===== v70: aviso al guardar ===== */
+#edSaveBtn.sv-busy{background:#475569!important;cursor:progress;pointer-events:none}
+#edSaveBtn.sv-ok{background:#16a34a!important;animation:svpop .35s}
+#edSaveBtn.sv-err{background:#e11d48!important}
+.svsp{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:svspin .7s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes svspin{to{transform:rotate(360deg)}}
+@keyframes svpop{0%{transform:scale(.92)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes svin{from{opacity:0;transform:translate(-50%,-8px)}to{opacity:1;transform:translate(-50%,0)}}
+.svnote{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:130;padding:10px 20px;border-radius:24px;font-weight:800;color:#fff;background:#16a34a;box-shadow:0 8px 24px rgba(0,0,0,.25);animation:svin .25s;white-space:nowrap}
+.svnote.er{background:#e11d48}
+/* ===== v70: botones de duplicar ===== */
+button[data-dup] svg{display:block;margin:auto}
+.x[data-dup]{display:inline-flex;align-items:center;justify-content:center;padding:4px 8px}
+.x[data-dup] svg{width:14px;height:14px}
+.x[data-dup]:hover,.ib[data-dup]:hover{color:var(--c)}
+.qrx[data-dup]{right:38px}
+/* ===== v70: otras formas de escribir la respuesta ===== */
+td.altw{position:relative}
+.altb{position:absolute;right:3px;bottom:3px;min-width:22px;height:20px;border:0;border-radius:7px;background:#e8f3ec;color:var(--c);font-weight:800;font-size:13px;line-height:20px;padding:0 5px;cursor:pointer;opacity:.5;transition:opacity .15s}
+.altb:hover,td:focus-within>.altb,.altb.has{opacity:1}
+.altb.has{background:var(--c);color:#fff}
+#ql .rt.rr.lism .pl::after{content:"≡";display:inline-block;box-sizing:border-box;width:24px;height:26px;margin-left:3px;line-height:22px;text-align:center;border:2px solid #cfdcd2;border-radius:8px;background:#fff;color:var(--c,#06621c);font-size:15px;font-weight:800;cursor:pointer;vertical-align:middle}
+#ql .rt.rr.lism .pl:hover::after{background:#f0fdf4;border-color:var(--c,#06621c)}
+.mbx .altl .exmr input{flex:1}
+</style>
+<script id="v70-mejoras">
+(function(){
+'use strict';
+const cp=o=>JSON.parse(JSON.stringify(o));
+
+/* ============================================================
+   1) «Guardar los cambios» avisa que está guardando y que guardó
+   ============================================================ */
+let SVB=false;
+function setSave(st){
+ const b=document.getElementById('edSaveBtn');if(!b)return;
+ clearTimeout(b._t);b.classList.remove('sv-busy','sv-ok','sv-err');
+ if(st==='busy'){b.classList.add('sv-busy');b.innerHTML='<span class="svsp"></span>Guardando…'}
+ else if(st==='ok'){b.classList.add('sv-ok');b.textContent='✔ ¡Guardado!';b._t=setTimeout(()=>setSave(),2400)}
+ else if(st==='err'){b.classList.add('sv-err');b.textContent='✕ No se guardó';b._t=setTimeout(()=>setSave(),3500)}
+ else b.textContent='Guardar los cambios';
+}
+function svNote(msg,er){
+ document.querySelectorAll('.svnote').forEach(n=>n.remove());
+ const n=document.createElement('div');n.className='svnote'+(er?' er':'');n.setAttribute('role','status');n.textContent=msg;document.body.appendChild(n);
+ setTimeout(()=>{try{n.remove()}catch(x){}},2600);
+}
+const gE0=window.guardarEval;
+if(typeof gE0==='function'){
+ window.guardarEval=async function(){
+  if(SVB)return false;
+  SVB=true;setSave('busy');const t0=Date.now();let ok=false;
+  try{ok=await gE0.apply(this,arguments)}catch(x){console.error(x);ok=false}
+  const w=Math.max(0,550-(Date.now()-t0));if(w)await new Promise(r=>setTimeout(r,w));
+  SVB=false;
+  if(ok){setSave('ok');svNote('✔ Cambios guardados')}
+  else setSave();  /* si hubo un problema, la ventana de aviso ya se mostró */
+  return ok;
+ };
+}
+
+/* ============================================================
+   2) Copiar / pegar con las respuestas incluidas
+   ============================================================ */
+function evqCopy(ev){
+ try{
+  const s=getSelection();if(!s||!s.rangeCount||s.isCollapsed)return;
+  const r=s.getRangeAt(0),n=r.commonAncestorContainer,el=n.nodeType===1?n:n.parentElement,d=el&&el.closest&&el.closest('#ql .rt');
+  if(!d)return;const a=document.activeElement;if(a&&a.tagName==='INPUT')return;
+  const fr=r.cloneContents(),full=ser(fr,1,0),plain=ser(fr,1,1);
+  if(!fr.querySelector('.pl')&&full===plain)return;   /* texto simple: se deja el copiado normal */
+  ev.clipboardData.setData('text/plain',plain);ev.clipboardData.setData('text/x-evq',full);ev.preventDefault();
+  if(ev.type==='cut'){r.deleteContents();d.dispatchEvent(new Event('input',{bubbles:true}))}
+ }catch(x){console.error('v70 copy',x)}
+}
+document.addEventListener('copy',evqCopy,true);
+document.addEventListener('cut',evqCopy,true);
+
+const RTP0=window.rtPaste;
+window.rtPaste=function(i,ev){
+ const cd=ev.clipboardData||window.clipboardData,rich=cd&&cd.getData?cd.getData('text/x-evq'):'';
+ if(!rich)return RTP0.apply(this,arguments);
+ ev.preventDefault();
+ let t=rich.replace(/\r/g,'').replace(/\u200b/g,'');if(!t)return;
+ const d=ev.currentTarget,s=getSelection();if(!s.rangeCount)return;
+ const rr=d.dataset.r!==undefined;let more=[];
+ if(rr){const L=t.replace(/\n+$/,'').split('\n');t=(L.shift()||'').replace(BULRP,'$1');more=L.map(z=>z.replace(BULRP,'$1')).filter(z=>fs(z).trim())}
+ const r=s.getRangeAt(0);r.deleteContents();
+ const tpl=document.createElement('template'),tr=/\n$/.test(t);
+ tpl.innerHTML=rtHtml(tr?t.replace(/\n$/,''):t)+(tr?'<br>':'');
+ const fr=tpl.content,inps=[...fr.querySelectorAll('.pl input')],brs=[...fr.querySelectorAll('br')],last=fr.lastChild;
+ r.insertNode(fr);
+ brs.forEach(b=>{if(b.parentNode!==d)hoist(b,d)});
+ inps.forEach(pfix);
+ if(last)r.setStartAfter(last);
+ r.collapse(true);setSel(r);commit(i,d);
+ if(more.length){const q=Q(i),a=rws(q),k=+d.dataset.r;a.splice(k+1,0,...more.map(z=>({tx:z,ex:[]})));syncTx(q);save();edit(CUR)}
+};
+
+/* ============================================================
+   3) Duplicar (pregunta, fila, casillero, opción, caja, fila de tabla…)
+   ============================================================ */
+const ICON_DUP='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+window.rwDup=function(i,k){const q=Q(i),a=rws(q);if(!a[k])return;a.splice(k+1,0,cp(a[k]));syncTx(q);save();edit(CUR);
+ const d=$('tx'+i+'_'+(k+1));if(d){d.focus();d.scrollIntoView({block:'nearest'})}};
+window.itDup=function(i,j){const q=Q(i);if(!Array.isArray(q.it)||q.it[j]===undefined)return;q.it.splice(j+1,0,cp(q.it[j]));save();edit(CUR)};
+window.mcDup=function(i,j){const q=Q(i);q.op.splice(j+1,0,q.op[j]);
+ if(Number.isInteger(q.c)&&q.c>j)q.c++;if(Array.isArray(q.cs))q.cs=q.cs.map(k=>k>j?k+1:k);save();edit(CUR)};
+window.claDup=function(i,j){const q=Q(i);q.cat.splice(j+1,0,cp(q.cat[j]));save();edit(CUR)};
+window.facDup=function(i,j){const q=Q(i);q.it.splice(j+1,0,cp(q.it[j]));save();facRe(i,'fc'+i+'_'+(j+1)+'_p')};
+window.calDup=function(i,bi,j){const b=Q(i).bl[bi];b.it.splice(j+1,0,cp(b.it[j]));save();calRe(i,'cl'+i+'_'+bi+'_'+(j+1)+'_p')};
+window.tbDup=function(i,ax,k){tbPop();const g=tbG(Q(i));
+ if(ax){g.forEach(r=>r.splice(k+1,0,cp(r[k])));save();tbRe(i,'tbc'+i+'_0_'+(k+1))}
+ else{g.splice(k+1,0,g[k].map(cp));save();tbRe(i,'tbc'+i+'_'+(k+1)+'_0')}};
+const DUPS=[
+ [/^rwDel\((\d+),(\d+)\)$/,m=>'rwDup('+m[1]+','+m[2]+')','Duplicar esta fila con su respuesta'],
+ [/^parDel\((\d+),(\d+)\)$/,m=>'itDup('+m[1]+','+m[2]+')','Duplicar este casillero'],
+ [/^Q\((\d+)\)\.it\.splice\((\d+),1\);save\(\);edit\(CUR\)$/,m=>'itDup('+m[1]+','+m[2]+')','Duplicar'],
+ [/^qcDel\((\d+),(\d+)\)$/,m=>'itDup('+m[1]+','+m[2]+')','Duplicar esta fila'],
+ [/^mcd\((\d+),(\d+)\)$/,m=>'mcDup('+m[1]+','+m[2]+')','Duplicar esta opción'],
+ [/^Q\((\d+)\)\.cat\.splice\((\d+),1\);save\(\);edit\(CUR\)$/,m=>'claDup('+m[1]+','+m[2]+')','Duplicar esta caja con sus elementos'],
+ [/^facDel\((\d+),(\d+)\)$/,m=>'facDup('+m[1]+','+m[2]+')','Duplicar esta fila'],
+ [/^calDel\((\d+),(\d+),(\d+)\)$/,m=>'calDup('+m[1]+','+m[2]+','+m[3]+')','Duplicar esta fila']
+];
+function injectDup(){
+ document.querySelectorAll('#ql button[onclick]').forEach(b=>{
+  if(b.dataset.dup||b.dataset.dd)return;
+  const oc=(b.getAttribute('onclick')||'').trim();
+  for(const [re,fn,t] of DUPS){
+   const m=oc.match(re);if(!m)continue;
+   b.dataset.dd='1';
+   const pv=b.previousElementSibling;if(pv&&pv.dataset&&pv.dataset.dup)return;
+   const c=b.cloneNode(false);c.removeAttribute('id');c.removeAttribute('disabled');c.removeAttribute('data-dd');
+   c.classList.remove('dl','dg');c.dataset.dup='1';c.title=t;c.setAttribute('aria-label',t);c.setAttribute('onclick',fn(m));c.innerHTML=ICON_DUP;
+   b.before(c);return;
+  }
+ });
+}
+
+/* ============================================================
+   4) Ventana de respuesta: escribir (con otras formas válidas) o elegir de lista (varias correctas)
+   ============================================================ */
+window.evqAns=function(c){
+ const H=e,cl=z=>String(z==null?'':z).replace(/[\[\]|¦]/g,'').replace(/^\s*[*~]+/,'').trim();
+ let m=c.m==='lis'?'lis':'esc',main=String(c.main||''),alts=(c.alts||[]).map(String),op=(c.op||[]).map(String),cs=new Set(c.cs||[]);
+ while(op.length<2)op.push('');if(!alts.length)alts=[''];if(!cs.size)cs.add(0);
+ const w=document.createElement('div');w.className='mdl';w.tabIndex=-1;
+ w.innerHTML='<div class="mbx exm"><b>'+H(c.title||'Respuesta del casillero')+'</b>'+(c.intro?'<p>'+H(c.intro)+'</p>':'')
+  +(c.lock?'':'<div class="qcr" style="margin:10px 0"><button type="button" class="qtg" data-a="esc">Escribe la palabra</button><button type="button" class="qtg" data-a="lis">Elige de la lista</button></div>')
+  +'<div class="nmw"></div><small class="nme" style="display:none;color:#e11d48;font-weight:700;margin:6px 0"></small>'
+  +'<div class="row" style="justify-content:flex-end;margin-top:10px"><button type="button" class="bt w" data-a="no">Cancelar</button><button type="button" class="bt" data-a="ok">Guardar</button></div></div>';
+ const W=w.querySelector('.nmw'),ER=w.querySelector('.nme'),end=()=>w.remove(),err=t=>{ER.textContent=t;ER.style.display='block'};
+ const draw=f=>{
+  ER.style.display='none';w.querySelectorAll('.qtg').forEach(b=>b.classList.toggle('on',b.dataset.a===m));
+  if(m==='esc'){
+   W.innerHTML='<label class="mmh">'+H(c.mainLabel||'Palabra correcta')+'</label><input class="nmi" data-w="1" placeholder="'+H(c.mainPh||'Escribe la respuesta')+'" value="'+H(main)+'" autocomplete="off">'
+    +'<label class="mmh" style="margin:12px 0 4px">'+H(c.altLabel||'También se acepta como correcta (otras formas de escribirla)')+'</label>'
+    +'<div class="exl2 altl">'+alts.map((a,k)=>'<div class="exmr"><input data-s="'+k+'" placeholder="Otra forma válida" value="'+H(a)+'" autocomplete="off"><button type="button" class="x" data-d2="'+k+'" title="Quitar">✕</button></div>').join('')+'</div>'
+    +'<div class="row"><button type="button" class="bt w" data-a="adds">+ Otra forma de escribirla</button></div>'
+    +'<small class="hint" style="display:block;margin-top:8px">'+(c.hint||'Ejemplo: si la respuesta es «triplay», puedes agregar «tripley». No hace falta repetirla con mayúsculas, tildes o espacios de más: ya se aceptan.')+'</small>';
+   if(f==='last'){const n=W.querySelectorAll('[data-s]');n[n.length-1].focus()}else if(f!==false)W.querySelector('[data-w]').focus();
+  }else{
+   W.innerHTML='<div class="exl2">'+op.map((o,k)=>'<div class="exmr"><button type="button" class="mct'+(cs.has(k)?' on':'')+'" data-k="'+k+'" title="Marcar o quitar como correcta">'+(cs.has(k)?'✔ Correcta':'Marcar')+'</button><input data-o="'+k+'" placeholder="Opción '+(k+1)+'" value="'+H(o)+'" autocomplete="off"><button type="button" class="x" data-d="'+k+'" title="Quitar">✕</button></div>').join('')+'</div>'
+    +'<div class="row"><button type="button" class="bt w" data-a="add">+ Opción</button></div>'
+    +'<small class="hint" style="display:block;margin-top:6px">Puedes marcar <b>más de una</b> como correcta. El alumno verá todas las opciones mezcladas en un desplegable.</small>';
+   if(f==='last'){const n=W.querySelectorAll('[data-o]');n[n.length-1].focus()}else if(f!==false){const n=W.querySelector('[data-o]');if(n)n.focus()}
+  }
+ };
+ w.oninput=ev=>{const t=ev.target;if(t.dataset.w)main=t.value;else if(t.dataset.s!==undefined)alts[+t.dataset.s]=t.value;else if(t.dataset.o!==undefined)op[+t.dataset.o]=t.value;ER.style.display='none'};
+ w.onclick=ev=>{
+  if(ev.target===w)return end();
+  const b=ev.target.closest('button');if(!b||!w.contains(b))return;
+  if(b.dataset.k!==undefined){const k=+b.dataset.k;cs.has(k)?cs.delete(k):cs.add(k);draw(false);return}
+  if(b.dataset.d!==undefined){const k=+b.dataset.d;if(op.length>2){op.splice(k,1);cs=new Set([...cs].filter(z=>z!==k).map(z=>z>k?z-1:z))}else op[k]='';draw(false);return}
+  if(b.dataset.d2!==undefined){const k=+b.dataset.d2;if(alts.length>1)alts.splice(k,1);else alts[0]='';draw(false);return}
+  const a=b.dataset.a;
+  if(a==='esc'||a==='lis'){
+   if(a===m)return;
+   if(a==='lis'&&!op.some(o=>String(o).trim())&&main.trim()){op[0]=cl(main);cs=new Set([0])}
+   if(a==='esc'&&!main.trim()){const k=[...cs].sort((x,y)=>x-y)[0];if(k!==undefined&&String(op[k]||'').trim())main=String(op[k]).trim()}
+   m=a;draw();
+  }
+  else if(a==='add'){op.push('');draw('last')}
+  else if(a==='adds'){alts.push('');draw('last')}
+  else if(a==='no')end();
+  else if(a==='ok'){
+   if(m==='esc'){
+    const mn=cl(main);if(!mn)return err('Escribe la respuesta correcta.');
+    const seen=new Set([nz(mn)]),words=[mn];alts.forEach(x=>{const t=cl(x);if(t&&!seen.has(nz(t))){seen.add(nz(t));words.push(t)}});
+    c.onOk({m:'esc',words});end();
+   }else{
+    const L=op.map((o,k)=>({t:cl(o),c:cs.has(k)})).filter(z=>z.t);
+    if(L.length<2)return err('Escribe al menos 2 opciones.');
+    if(new Set(L.map(z=>nz(z.t))).size<L.length)return err('Hay opciones repetidas.');
+    if(!L.some(z=>z.c))return err('Marca al menos una opción como correcta.');
+    c.onOk({m:'lis',L});end();
+   }
+  }
+ };
+ w.onkeydown=ev=>{
+  if(ev.key==='Escape'){ev.stopPropagation();end();return}
+  if((ev.ctrlKey||ev.metaKey)&&ev.key==='Enter'){ev.preventDefault();w.querySelector('[data-a="ok"]').click();return}
+  if(ev.key==='Enter'){
+   if(ev.target.dataset.w){ev.preventDefault();w.querySelector('[data-a="ok"]').click()}
+   else if(ev.target.dataset.s!==undefined){ev.preventDefault();alts.push('');draw('last')}
+   else if(ev.target.dataset.o!==undefined){ev.preventDefault();op.push('');draw('last')}
+  }
+ };
+ draw();document.body.appendChild(w);
+};
+
+/* ============================================================
+   5) «Otras formas de escribir la respuesta» en tablas, facturación, cálculo
+      y «Respuestas correctas» en las filas de «Elige de lista»
+   ============================================================ */
+const ALT_SEL='#ql input.tba2,#ql input.fa2,#ql input.cala';
+function openAlt(inp){
+ const ps=String(inp.value||'').split('|').map(z=>z.trim()),isRow=!!inp.closest('.rt.rr');
+ window.evqAns({m:'esc',lock:1,
+  title:isRow?'Respuestas correctas de la lista':'Otras formas de escribir la respuesta',
+  intro:isRow?'Marca todo lo que vale como correcto. El alumno verá todas estas palabras en la lista.':'Si el alumno puede escribir la respuesta de otra manera y también es correcta, agrégala aquí.',
+  mainLabel:isRow?'Respuesta correcta':'Respuesta principal',
+  altLabel:isRow?'También es correcta':'También se acepta',
+  hint:isRow?'Ejemplo: si aceptas «Capinurí» y «Capinuri», escribe una arriba y la otra aquí.':'Ejemplos: «3» y «tres» · «MDF» y «mdf crudo». No hace falta repetirla con mayúsculas ni tildes: ya se aceptan.',
+  main:ps[0]||'',alts:ps.slice(1).filter(Boolean),
+  onOk:res=>{inp.value=res.words.join('|');inp.dispatchEvent(new Event('input',{bubbles:true}));injectAlt()}});
+}
+function updAlt(b,inp){const n=String(inp.value||'').split('|').map(z=>z.trim()).filter(Boolean).length-1;b.classList.toggle('has',n>0);b.textContent=n>0?'≡ '+n:'≡';
+ b.title=n>0?'Esta respuesta tiene '+n+' forma'+(n>1?'s':'')+' más de escribirse. Clic para ver o cambiar.':'Agregar otras formas válidas de escribir esta respuesta'}
+function injectAlt(){
+ document.querySelectorAll(ALT_SEL).forEach(inp=>{
+  const td=inp.closest('td');if(!td)return;td.classList.add('altw');
+  let b=td.querySelector(':scope>.altb');
+  if(!b){b=document.createElement('button');b.type='button';b.className='altb';b.tabIndex=-1;td.appendChild(b)}
+  updAlt(b,inp);
+ });
+ document.querySelectorAll('#ql .rt.rr').forEach(d=>{
+  const q=CUR&&CUR.qs&&CUR.qs[+d.dataset.i];d.classList.toggle('lism',!!q&&q.m==='lis');
+  if(q&&q.m==='lis')d.querySelectorAll('.pl').forEach(p=>{p.title='Clic en ≡ para marcar más de una respuesta correcta'});
+ });
+ document.querySelectorAll('#ql .rt:not(.rr) .pl:not(.lst)').forEach(p=>{p.title='Clic en ▾ para elegir de una lista o agregar otras formas de escribir la respuesta'});
+}
+document.addEventListener('click',ev=>{
+ const t=ev.target;if(!t||!t.closest)return;
+ const b=t.closest('.altb');
+ if(b){const td=b.closest('td'),inp=td&&td.querySelector('input.tba2,input.fa2,input.cala');if(inp){ev.preventDefault();ev.stopPropagation();openAlt(inp)}return}
+ const p=t.closest('#ql .rt.rr.lism .pl');
+ if(p&&t===p){const inp=p.querySelector('input');if(inp){ev.preventDefault();ev.stopPropagation();openAlt(inp)}}
+},true);
+document.addEventListener('keydown',ev=>{
+ if(ev.altKey&&!ev.ctrlKey&&!ev.metaKey&&ev.code==='KeyL'){
+  const a=document.activeElement,p=a&&a.tagName==='INPUT'&&a.closest&&a.closest('#ql .rt.rr.lism .pl');
+  if(p){ev.preventDefault();ev.stopPropagation();openAlt(a)}
+ }
+},true);
+document.addEventListener('input',ev=>{
+ const t=ev.target;if(t&&t.matches&&t.matches(ALT_SEL)){const td=t.closest('td'),b=td&&td.querySelector(':scope>.altb');if(b)updAlt(b,t)}
+},true);
+
+/* ============================================================
+   6) Observador: añade los botones cada vez que el editor se vuelve a dibujar
+   ============================================================ */
+function inject(){try{injectDup();injectAlt()}catch(x){console.error('v70',x)}}
+let raf=0;
+const mo=new MutationObserver(()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;inject()})});
+mo.observe(document.getElementById('app'),{childList:true,subtree:true});
+inject();
+})();
+</script>
+
+<style id="v46-extra">
+.ed .side{padding-bottom:26px}
+.tool-grip{position:absolute;right:4px;bottom:4px;width:26px;height:26px;display:grid;place-items:center;cursor:ns-resize;color:#6f8578;border-radius:8px;background:rgba(255,255,255,.92);touch-action:none;user-select:none;-webkit-user-select:none;z-index:3}
+.tool-grip:hover{color:var(--c);background:#eaf4ed}
+@media(max-width:979px){.tool-grip{display:none}.ed .side{padding-bottom:10px}}
+.asgpv{font-size:12px;font-weight:800;white-space:nowrap;background:#fef3c7;color:#92400e;border-radius:10px;padding:2px 8px}
+.asgpv.r{background:#dbeafe;color:#1e40af}
+.asgwn{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 10px;padding:8px 12px;border:2px solid #fcd34d;background:#fffbeb;border-radius:12px;font-weight:700;font-size:13px;color:#92400e}
+.asgs.cl{background:#e5e7eb;color:#4b5563}
+.asgpd summary{cursor:pointer;font-weight:800;color:var(--c)}
+.asgpd div{font-size:12px;color:var(--mu);margin-top:4px;max-width:260px;font-weight:600}
+</style>
 </body></html>
