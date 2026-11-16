@@ -1080,6 +1080,7 @@ body:has(.wfull){overflow:hidden}
 .asgmn{min-width:44px;font-size:20px;line-height:1;padding:8px 14px;flex:none}
 .asgs{display:flex;flex-direction:column;gap:4px;margin:0 0 10px}.asgs input{width:100%;box-sizing:border-box;border:2px solid var(--bd);border-radius:12px;padding:10px 12px;font:600 15px inherit;font-family:inherit;background:#fff;color:var(--tx)}.asgs input:focus{outline:0;border-color:var(--c)}.asgs small{font-size:12px}
 .wl-rem{display:flex;align-items:center;gap:9px;margin:4px 0 12px;font-size:14px;font-weight:600;color:var(--tx);cursor:pointer;user-select:none}.wl-rem input{width:20px;height:20px;min-width:20px;margin:0;padding:0;flex:none;accent-color:var(--c);cursor:pointer}html{overscroll-behavior-y:contain}
+.cal-b{margin-top:18px;text-align:left}.cal-b h2{margin:0;font-size:19px;color:var(--c)}.cal-b>.lk{margin:2px 0 0;text-align:left}.cal-sm{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 12px}.cal-sm span{background:#f3faf5;border:1.5px solid var(--bd);border-radius:10px;padding:5px 10px;font-size:13px;font-weight:700;color:var(--tx)}.cal-ex{border:2px solid var(--bd);border-radius:12px;background:#fff;margin-bottom:8px;overflow:hidden}.cal-ex>summary{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;list-style:none}.cal-ex>summary::-webkit-details-marker{display:none}.cal-ex>summary::after{content:'▾';color:var(--mu);transition:transform .15s}.cal-ex[open]>summary::after{transform:rotate(180deg)}.cal-t{flex:1;min-width:0}.cal-t b{display:block}.cal-t small{color:var(--mu);font-size:12px}.cal-n{font-size:22px;font-weight:800;line-height:1}.cal-n small{font-size:12px;font-weight:700;color:var(--mu)}.cal-n.cal-ok{color:var(--ok)}.cal-n.cal-no{color:var(--no)}.cal-at{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;border-top:1px solid #e3ece6;font-size:13px}.cal-at small{display:block;color:var(--mu)}.cal-at .cal-r{text-align:right;flex:none}.cal-at .cal-r b{font-size:16px}
 .slotv{margin:8px 0 12px;padding:9px 13px;border:2px solid var(--bd);border-left:5px solid var(--c);border-radius:12px;background:#f3faf5;font-size:13px;line-height:1.45;color:var(--tx);text-align:left}.slotv b{color:var(--c)}
 </style>
 
@@ -2925,13 +2926,31 @@ function waitOpen(aid){WA=aid;portStop();render()}
 function waitExit(){WA=0;waitStop();render()}
 const go0=go;
 go=function(aid){const a=DB.as.find(x=>x.id===aid);if(a&&a.live&&!a.go&&!M)return waitOpen(aid);return go0(aid)};
+
+/* v42: «Mis calificaciones» en el portal del alumno */
+function califCard(){try{
+ if(M||!ROL||RUN||!SID||!A.firstElementChild||A.querySelector('.cal-b'))return;
+ if(!(DB.al||[]).some(x=>x.id===SID))return;
+ const rs=(DB.rs||[]).filter(r=>r.al===SID),G={};
+ rs.forEach(r=>{(G[r.e]=G[r.e]||[]).push(r)});
+ const fd=r=>{const d=r.at?new Date(+r.at):null;return d&&!isNaN(d)?d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})+' · '+d.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}):'Sin fecha'},
+  ids=Object.keys(G).sort((a,b)=>Math.max(...G[b].map(r=>+r.at||0))-Math.max(...G[a].map(r=>+r.at||0))),
+  rows=ids.map(id=>{const v=DB.evals.find(x=>x.id===id),ap=v?gcfg(v).ap:13,L=G[id].slice().sort((a,b)=>(+b.at||0)-(+a.at||0)),F=L.filter(r=>r.n!=null),best=F.length?Math.max(...F.map(r=>+r.n)):null;return{id,v,ap,L,F,best}}),
+  gr=rows.filter(x=>x.F.length),prom=gr.length?gr.reduce((a,x)=>a+x.best,0)/gr.length:null,apro=gr.filter(x=>x.best>=x.ap).length,
+  st=(r,ap)=>r.pend?['En revisión','re']:r.n==null?['Incompleto','p']:(+r.n>=ap?['Aprobado','ok']:['Desaprobado','no']);
+ const h=`<div class="box cal-b"><h2>Mis calificaciones</h2><p class="lk">Resultados de los exámenes que has rendido.</p>`+
+  (rows.length?`<div class="cal-sm"><span>Exámenes rendidos: ${rows.length}</span>${gr.length?`<span>Aprobados: ${apro} de ${gr.length}</span><span>Promedio: ${prom.toFixed(1)} / 20</span>`:''}</div>`+
+   rows.map(x=>{const s0=x.F.length?(x.best>=x.ap?'ok':'no'):'',n=x.L.length;return `<details class="cal-ex"><summary><span class="cal-t"><b>${e(x.v?x.v.n:'(examen eliminado)')}</b><small>${n} intento${n===1?'':'s'} · mínimo ${x.ap}/20</small></span><span class="cal-n ${s0?'cal-'+s0:''}">${x.F.length?x.best.toFixed(1):'—'}<small> /20</small></span></summary>`+
+    x.L.map(r=>{const t=st(r,x.ap);return `<div class="cal-at"><span>${fd(r)}<small>${r.n!=null&&r.m?r.p+' de '+r.m+' correctas':''}${r.sec?(r.n!=null&&r.m?' · ':'')+Math.floor(r.sec/60)+' min '+r.sec%60+' s':''}${r.bx?' · incluye bonus +'+r.bx:''}</small></span><span class="cal-r"><b>${r.n!=null?(+r.n).toFixed(1):'—'}</b><br><span class="eb ${t[1]}">${t[0]}</span></span></div>`}).join('')+`</details>`}).join(''):'<p class="lk" style="text-align:center;margin-top:12px">Aún no has rendido ningún examen.</p>')+`</div>`;
+ A.firstElementChild.insertAdjacentHTML('beforeend',h)
+}catch(x){console.error(x)}}
 portal=function(){
  if(!M&&ROL&&!RUN&&WA){const a=DB.as.find(x=>x.id===WA);
   if(a&&a.live&&DB.al.some(x=>x.id===SID)&&tg(a).some(x=>x.id===SID)){portStop();return waitView(a)}
   WA=0}
  waitStop();
  if(!M&&ROL&&API&&ME&&DB.al.some(x=>x.id===SID))portStart();else portStop();
- const r=pt0();waitCards();return r};
+ const r=pt0();waitCards();califCard();return r};
 /* en la lista: los exámenes asignados que aún no comienzan dicen «Entrar» y «Esperando inicio» */
 function waitCards(){try{A.querySelectorAll('button[onclick^="go("]').forEach(b=>{const m=/go\('([^']+)'\)/.exec(b.getAttribute('onclick')||''),a=m&&DB.as.find(x=>x.id===m[1]);
  if(a&&a.live&&!a.go){b.textContent='Entrar';const bd=b.parentNode.querySelector('.eb');if(bd){bd.textContent='Esperando inicio';bd.className='eb re'}}})}catch(x){}}
