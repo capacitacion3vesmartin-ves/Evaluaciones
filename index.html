@@ -1078,6 +1078,9 @@ body:has(.wfull){overflow:hidden}
 .asgitr .asgav{flex:none}
 .asgr.asgoff{opacity:.55;cursor:not-allowed;background:#f3f4f3}.asgr.asgoff .asgat{background:#fee2e2;color:#991b1b;border-radius:10px;padding:2px 8px}
 .asgmn{min-width:44px;font-size:20px;line-height:1;padding:8px 14px;flex:none}
+.asgs{display:flex;flex-direction:column;gap:4px;margin:0 0 10px}.asgs input{width:100%;box-sizing:border-box;border:2px solid var(--bd);border-radius:12px;padding:10px 12px;font:600 15px inherit;font-family:inherit;background:#fff;color:var(--tx)}.asgs input:focus{outline:0;border-color:var(--c)}.asgs small{font-size:12px}
+.wl-rem{display:flex;align-items:center;gap:9px;margin:4px 0 12px;font-size:14px;font-weight:600;color:var(--tx);cursor:pointer;user-select:none}.wl-rem input{width:20px;height:20px;min-width:20px;margin:0;padding:0;flex:none;accent-color:var(--c);cursor:pointer}html{overscroll-behavior-y:contain}
+.slotv{margin:8px 0 12px;padding:9px 13px;border:2px solid var(--bd);border-left:5px solid var(--c);border-radius:12px;background:#f3faf5;font-size:13px;line-height:1.45;color:var(--tx);text-align:left}.slotv b{color:var(--c)}
 </style>
 
 <style id="v34-user-improvements">
@@ -1537,7 +1540,7 @@ function play(v,T){play0(v,T);fitAll(T||A)}
 function play0(v,T){(T||A).innerHTML=`<h1>${e(v.n)}</h1>`+v.qs.map((q,i)=>`<div class="box q" id="q${i}"><span class="tag">${i+1}</span>${q.bonus?`<span class="tag" style="background:#d97706">⭐ Bonus +${+q.pts||0} pts</span>`:''}<div class="ins" style="display:inline">${fmb(q.ins)}</div>${q.t==='lin'||q.t==='rim'?'<p class="hint lnh">Cómo unir: toca un elemento de la izquierda y luego su pareja en la derecha; se dibujará una línea. Para cambiarla, vuelve a tocar.</p>':''}<div style="margin-top:8px">${pq(q)}</div><p class="rs"></p></div>`).join('')+`<div id="sc"></div><div class="bar bps"><button class="bt" data-ck onclick="chk()">Comprobar</button><button class="bt w" onclick="play(CUR)">Reiniciar</button></div>`}
 function vfs(b,v){if(b.closest('.fin'))return;const r=b.closest('.vfr');r.dataset.s=v;r.querySelectorAll('button').forEach((x,k)=>x.classList.toggle('s',(k===0)===!!v))}
 function chk(){let ok=0,tot=0;BX=[];CUR.qs.forEach((q,i)=>{const b=$('q'+i);let o=0,t=0;const mk=(el,g)=>{t++;o+=g?1:0;el.classList.remove('ok','bad');el.classList.add(g?'ok':'bad')};
- if(q.t==='mc'){const cs=mcC(q).filter(j=>String(q.op[j]||'').trim()),S=[...b.querySelectorAll('.mc.s')];b.querySelectorAll('.mc').forEach(x=>x.classList.remove('ok','bad'));S.forEach(x=>mk(x,cs.includes(+x.dataset.j)));cs.forEach(j=>{if(!S.some(x=>+x.dataset.j===j))t++});if(!S.length&&!cs.length)t++}else if(q.t==='lin'||q.t==='rim'){const w=b.querySelector('.ln'),m=w._m||new Map();w.children[1].querySelectorAll('.nd').forEach(l=>{const r=m.get(l),g=!!r&&nz(r.dataset.a)===nz(l.dataset.a);l.dataset.st=g?1:0;mk(l,g)});lnd(w)}else if(q.t==='ord'){b.querySelectorAll('.od').forEach((r,p)=>mk(r,+r.dataset.k===p))}else if(q.t==='cla'||q.t==='par'){b.querySelectorAll('.chip').forEach(c=>mk(c,c.parentNode.classList.contains('hole')&&c.parentNode.dataset.k===c.dataset.k));b.querySelectorAll('input.cdv').forEach(g=>mk(g,nz(g.value)===nz(g.dataset.a)))}else if(q.t==='vf')b.querySelectorAll('.vfr').forEach(r=>mk(r,r.dataset.s===r.dataset.v));
+ if(q.t==='mc'){const cs=mcC(q).filter(j=>String(q.op[j]||'').trim()),S=[...b.querySelectorAll('.mc.s')];b.querySelectorAll('.mc').forEach(x=>x.classList.remove('ok','bad'));let ac=0,er=0;S.forEach(x=>{const g=cs.includes(+x.dataset.j);x.classList.add(g?'ok':'bad');g?ac++:er++});t=Math.max(cs.length,1);o=Math.max(0,ac-er)}else if(q.t==='lin'||q.t==='rim'){const w=b.querySelector('.ln'),m=w._m||new Map();w.children[1].querySelectorAll('.nd').forEach(l=>{const r=m.get(l),g=!!r&&nz(r.dataset.a)===nz(l.dataset.a);l.dataset.st=g?1:0;mk(l,g)});lnd(w)}else if(q.t==='ord'){b.querySelectorAll('.od').forEach((r,p)=>mk(r,+r.dataset.k===p))}else if(q.t==='cla'||q.t==='par'){b.querySelectorAll('.chip').forEach(c=>mk(c,c.parentNode.classList.contains('hole')&&c.parentNode.dataset.k===c.dataset.k));b.querySelectorAll('input.cdv').forEach(g=>mk(g,nz(g.value)===nz(g.dataset.a)))}else if(q.t==='vf')b.querySelectorAll('.vfr').forEach(r=>mk(r,r.dataset.s===r.dataset.v));
  else if(q.t==='lib'){}
  else if(q.t==='cal')b.querySelectorAll('input.gp').forEach(g=>mk(g,calOk(g.value,g.dataset.a)));
  else b.querySelectorAll('.gp,.hole').forEach(g=>{const v=g.classList.contains('hole')?(g.querySelector('.chip')||{}).textContent||'':g.value;mk(g,g.dataset.a.split('|').some(a=>nz(a)===nz(v)))});
@@ -1548,7 +1551,7 @@ function chk(){let ok=0,tot=0;BX=[];CUR.qs.forEach((q,i)=>{const b=$('q'+i);let 
 const bankOf=n=>n.closest('.q').querySelector('.bank');
 function put(h,c){const o=h.querySelector('.chip');if(o&&!h.classList.contains('multi'))bankOf(h).appendChild(o);h.appendChild(c)}
 document.addEventListener('click',ev=>{const c=ev.target.closest('.q .chip'),h=ev.target.closest('.q .hole');if((c||h)&&(c||h).closest('.fin'))return;
- if(c){if(c.parentNode.classList.contains('hole'))bankOf(c).appendChild(c);else{if(SEL)SEL.classList.remove('sel');SEL=SEL===c?null:c;if(SEL)SEL.classList.add('sel')}return}
+ if(c){if(c.parentNode.classList.contains('hole')){if(SEL&&SEL!==c&&SEL.closest('.q')===c.closest('.q')){put(c.parentNode,SEL);SEL.classList.remove('sel');SEL=null}else bankOf(c).appendChild(c)}else{if(SEL)SEL.classList.remove('sel');SEL=SEL===c?null:c;if(SEL)SEL.classList.add('sel')}return}
  if(h&&SEL&&h.closest('.q')===SEL.closest('.q')){put(h,SEL);SEL.classList.remove('sel');SEL=null}});
 document.addEventListener('dragstart',ev=>{DR=ev.target.closest&&ev.target.closest('.chip');if(DR&&DR.closest('.fin')){DR=null;ev.preventDefault()}});
 document.addEventListener('dragover',ev=>{if(ev.target.closest('.hole,.bank'))ev.preventDefault()});
@@ -2079,7 +2082,7 @@ function bxPick(){const w=document.createElement('div');w.className='mdl';
    debe responder {ok,rol:'al'|'cap',id,n,ad,db} con la base ya filtrada por sede y rol. */
 const SEDES=(CFG.sedes&&CFG.sedes.length)?CFG.sedes:['Villa el Salvador','Puente Piedra','Piura','Arequipa'];
 let ROL='',SEDE='',ME=null,FULL=null,RG='';
-const GATE={s:''},GF={n:0,u:0},KS=['evals','folders','al','as','gr'],
+const GATE={s:(()=>{try{const R=JSON.parse(localStorage.getItem('ev_rec')||'null');return R&&R.s&&SEDES.includes(R.s)?R.s:''}catch(x){return''}})()},GF={n:0,u:0},KS=['evals','folders','al','as','gr'],
 gname=x=>(DB.gr.find(g=>g.id===x.g)||{}).n||'',
 ovr=(a,x)=>a.t!=='s'&&DB.as.some(b=>b.t==='s'&&b.e===a.e&&b.w===x.id),
 genK=()=>String(crypto.getRandomValues(new Uint32Array(1))[0]%1000000).padStart(6,'0');
@@ -2114,6 +2117,7 @@ async function gIn(){const d=$('gd').value.trim(),k=$('gk').value.trim(),b=$('gb
  b.disabled=false;b.textContent='Entrar';
  if(fail)return gErr('No hay conexión con el servidor. Revisa tu internet e inténtalo otra vez.');
  if(!r){if(++GF.n>=5){GF.n=0;GF.u=Date.now()+60000}$('gk').value='';$('gk').focus();return gErr('DNI o clave incorrectos.')}
+ try{const c=$('grem');if(c&&c.checked)localStorage.setItem('ev_rec',JSON.stringify({s:GATE.s,d,k}));else localStorage.removeItem('ev_rec')}catch(x){}
  enter(r,GATE.s,k)}
 function enter(r,s,k){GF.n=0;ROL=r.rol;SEDE=s;KEY=k;ME={id:r.id,ad:r.ad,n:r.n,c:r.c};M=ROL==='cap';SID=M?null:r.id;
  if(!API){if(M)claim(s);view(s)}
@@ -2126,10 +2130,23 @@ function gSetupGo(){DBi();if(DB.cp.length)return render();
  if(k!==$('gsk2').value.trim())return toast('Las claves no coinciden');
  const c={id:uid(),c:d,n:n.toUpperCase(),k,s:GATE.s,ad:1};DB.cp.push(c);claim(GATE.s);save();
  enter({rol:'cap',id:c.id,ad:true,n:c.n,c:c.c},GATE.s,k)}
-function salir(){try{save(CUR&&M?1:0)}catch(x){}
+function salir(){try{localStorage.removeItem('ev_rec')}catch(x){}try{save(CUR&&M?1:0)}catch(x){}
  if(FULL){DB=FULL;FULL=null}
  if(API){try{localStorage.removeItem('ev_db')}catch(x){}DB={folders:[],evals:[]}}
  ROL='';SEDE='';ME=null;M=false;KEY='';SID=null;CUR=null;PLAY=false;ED=false;RUN=null;VW='ev';GATE.s='';render()}
+/* v41: «Recordarme en este dispositivo» + alerta al actualizar en cualquier pantalla */
+const gate0=gate;gate=function(){gate0.apply(this,arguments);try{
+ const bt=$('gbt');if(!bt||$('grem'))return;
+ let R=null;try{R=JSON.parse(localStorage.getItem('ev_rec')||'null')}catch(x){}
+ const on=!!(R&&R.s===GATE.s);
+ bt.insertAdjacentHTML('beforebegin','<label class="wl-rem" for="grem"><input type="checkbox" id="grem"'+(on?' checked':'')+'><span>Recordarme en este dispositivo</span></label>');
+ if(on){const d=$('gd'),k=$('gk');if(d&&!d.value)d.value=R.d||'';if(k&&!k.value)k.value=R.k||''}
+ const k2=$('gk');if(on&&k2&&k2.value){setTimeout(()=>{try{k2.focus()}catch(x){}},60)}
+}catch(x){console.error(x)}};
+addEventListener('beforeunload',ev=>{if(NOW)return;ev.preventDefault();ev.returnValue='';return ''});
+let RFD=0;
+addEventListener('keydown',async ev=>{if(exAct())return;const k=(ev.key||'').toLowerCase();if(!(ev.key==='F5'||((ev.ctrlKey||ev.metaKey)&&k==='r')))return;ev.preventDefault();if(RFD)return;RFD=1;
+ try{if(await dlg({t:'¿Actualizar la página?',m:ROL?'Si actualizas, volverás al inicio y perderás lo que no hayas guardado.':'Se volverá a cargar la página.',ok:'Actualizar',danger:1})){NOW=1;location.reload()}}finally{RFD=0}},true);
 /* grupos */
 function pgr(){return (`<div class="box"><b>Grupos</b><p class="lk" style="text-align:left;margin:6px 0 0">Cada tanda de capacitación es un grupo. Asigna el examen al grupo y entran todos sus alumnos; las excepciones se asignan a una sola persona.</p><div class="row"><input id="ngr" placeholder="Nombre del grupo (ej. Grupo 12 · Noviembre)" onkeydown="if(event.key==='Enter')addGr()"><button class="bt" onclick="addGr()">+ Grupo</button></div>`+(DB.gr.map(g=>`<div class="rw" style="margin-top:8px"><div class="rn"><b>${e(g.n)}</b><small>${DB.al.filter(x=>x.g===g.id).length} alumno(s)</small></div><button class="bt w sm" onclick="renGr('${g.id}')">Renombrar</button><button class="bt w sm dz2" onclick="delGr('${g.id}')">Eliminar</button></div>`).join('')||'<p class="lk">Aún no hay grupos.</p>')+'</div>').replace(/\n/g,' ')}
 function addGr(){const n=$('ngr').value.trim();if(!n)return toast('Escribe el nombre del grupo');if(DB.gr.some(g=>nz(g.n)===nz(n)))return toast('Ya existe un grupo con ese nombre');DB.gr.push({id:uid(),n,c:Date.now()});sv()}
@@ -2454,13 +2471,26 @@ const ed3=edit;edit=function(v){hdClose();ed3(v);const L=$('ql');if(!L)return;
  const ni=L.children[0].querySelector('input');if(ni)ni.addEventListener('input',()=>{const t=$('hdT');if(t)t.dataset.ph=CUR.n||'Título'})};
 
 /* ===== DATOS DEL ALUMNO (DNI, nombre, fecha) + DESCARGAR IMAGEN ===== */
-const dlOn=()=>!!CUR&&!!+gcfg(CUR).dl,nf=n=>{const t=String(n);return /^\d(\.|$)/.test(t)?'0'+t:t},ncol=n=>n>=(+gcfg(CUR).ap||0)?'#1d4ed8':'#dc2626';
+const dlOn=()=>!!CUR&&!!+gcfg(CUR).dl,nf=n=>{const t=String(n);if(+n>0&&+n<1)return t;return /^\d(\.|$)/.test(t)?'0'+t:t},ncol=n=>n>=(+gcfg(CUR).ap||0)?'#1d4ed8':'#dc2626';
 const hoy=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10)},
 fdt=v=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v||'');return m?m[3]+'/'+m[2]+'/'+m[1]:''};
 const pl1=play;play=function(v,T){pl1(v,T);if(!T&&!PLAY)return;const R=T||A,h1=R.querySelector(':scope>h1');if(!h1)return;
  const st=!T&&PLAY,al=st&&RUN&&DB.al&&DB.al.find(x=>x.id===SID);
  h1.outerHTML=hdHtml(v,{st,al})};
 const pl2=play;play=function(v,T){pl2(v,T);if(!T&&PLAY&&!RUN&&CUR===v)tmr(+gcfg(v).min||0)};
+/* v39: valor de cada casillero, bajo el encabezado */
+function slotsTot(){let t=0;CUR.qs.forEach((q,i)=>{if(q.bonus||q.t==='lib')return;const b=$('q'+i);if(!b)return;
+ if(q.t==='mc')t+=Math.max(mcC(q).filter(j=>String(q.op[j]||'').trim()).length,1);
+ else if(q.t==='lin'||q.t==='rim'){const w=b.querySelector('.ln');if(w)t+=w.children[1].querySelectorAll('.nd').length}
+ else if(q.t==='ord')t+=b.querySelectorAll('.od').length;
+ else if(q.t==='cla'||q.t==='par')t+=b.querySelectorAll('.chip').length+b.querySelectorAll('input.cdv').length;
+ else if(q.t==='vf')t+=b.querySelectorAll('.vfr').length;
+ else if(q.t==='cal')t+=b.querySelectorAll('input.gp').length;
+ else t+=b.querySelectorAll('.gp,.hole').length});return t}
+function slotNote(){const R=A,h=R.querySelector(':scope>.eh');if(!h||!CUR)return;const o=R.querySelector(':scope>.slotv');if(o)o.remove();const t=slotsTot();if(!t)return;
+ const v=20/t,nb=CUR.qs.some(q=>q.bonus),nl=CUR.qs.some(q=>q.t==='lib'),f=x=>(Math.round(x*100)/100).toFixed(2);
+ h.insertAdjacentHTML('afterend',`<div class="slotv">ℹ️ Este examen tiene <b>${t} casillero${t===1?'':'s'} de respuesta</b> y cada uno vale <b>${f(v)} puntos</b> (20 ÷ ${t}). Ejemplo: 5 casilleros correctos = ${f(v*5)} puntos. La nota final se redondea a 1 decimal.${nb?' Las preguntas ⭐ bonus suman aparte.':''}${nl?' Las preguntas libres las califica tu capacitador.':''}</div>`)}
+const pl3=play;play=function(v,T){pl3(v,T);if(!T&&PLAY)try{slotNote();A.querySelectorAll('.q input:not([type=hidden])').forEach(x=>{x.setAttribute('autocorrect','off');x.setAttribute('autocapitalize','none');x.setAttribute('autocomplete','off');x.setAttribute('spellcheck','false')})}catch(x){console.error(x)}};
 const ck2=chk;chk=function(){
  if(!RUN){const d=$('idd'),n=$('idn'),f=$('idf');
   if(d||n||f){[d,n,f].forEach(x=>x&&x.classList.remove('er'));
@@ -2716,12 +2746,21 @@ asgOld=v=>{const L=DB.as.filter(a=>a.e===v.id&&!a.live);if(!L.length)return'';
  return `<div class="asgo"><b>Otras asignaciones de este examen</b><small>Hechas antes desde el menú. Quítalas si ya no las necesitas.</small>${L.map(a=>`<div class="asgor"><span>${a.t==='g'?'Grupo '+e((DB.gr.find(g=>g.id===a.w)||{}).n||'(eliminado)'):a.t==='a'?(a.w==='*'?'Toda la sede':'Área '+e(a.w)):'Individual: '+e((DB.al.find(x=>x.id===a.w)||{}).n||'(eliminado)')} · ${a.d?'vence '+a.d:'sin fecha límite'} · ${a.i?a.i+' intento'+(a.i>1?'s':''):'sin límite de intentos'}</span><button type="button" class="bt w sm dz2" onclick="asgQuitar('${a.id}')">Quitar</button></div>`).join('')}</div>`};
 function asgKeep(f){const g=()=>document.querySelector('#asgm .asgb'),y=g()?g().scrollTop:0;f();const n=g();if(n)n.scrollTop=y}
 function asgItList(l){return DB.al.filter(a=>(l.l||[]).includes(a.id)).sort((a,b)=>a.n.localeCompare(b.n,'es'))}
-function asgItOpen(){const l=ASG&&ASG.g&&asgLive(ASG.e,ASG.g);if(!l)return toast('Primero pulsa «Asignar»');if(!l.i)return toast('Este examen no tiene límite de intentos');asgItDraw()}
-function asgItClose(){const m=$('asgit');if(m)m.remove()}
+function asgItOpen(){const l=ASG&&ASG.g&&asgLive(ASG.e,ASG.g);if(!l)return toast('Primero pulsa «Asignar»');if(!l.i)return toast('Este examen no tiene límite de intentos');ASGQ='';asgItDraw()}
+function asgItClose(){const m=$('asgit');if(m)m.remove();ASGQ=''}
+/* buscador de alumnos en «Dar o quitar intentos» */
+let ASGQ='';
+function asgItList2(l){const t=nz(ASGQ||'').split(' ').filter(Boolean),all=asgItList(l);return{all,L:t.length?all.filter(a=>{const h=nz(a.n+' '+(a.c||''));return t.every(x=>h.includes(x))}):all}}
+function asgItRows(l){const{all,L}=asgItList2(l);
+ if(!all.length)return '<p class="lk">No hay alumnos asignados.</p>';
+ if(!L.length)return '<p class="lk">Ningún alumno coincide con «'+e(ASGQ)+'».</p>';
+ return L.map(a=>{const s=stt(l,a.id),ex=(l.b||{})[a.id]||0,tot=(+l.i||0)+ex;return `<div class="asgitr">${asgAv(a,34)}<span class="asgnm"><b>${e(a.n)}</b><small>Usó ${s.R.length} de ${tot} intento${tot===1?'':'s'}${ex?' ('+(ex>0?'+':'−')+Math.abs(ex)+' extra)':''}</small></span><button type="button" class="bt w sm asgmn" ${tot<=0?'disabled':''} onclick="asgAdj(event,'${l.id}','${a.id}',-1)" aria-label="Quitar un intento">−</button><button type="button" class="bt sm asgmn" onclick="asgAdj(event,'${l.id}','${a.id}',1)" aria-label="Dar un intento">+</button></div>`}).join('')}
+function asgItCnt(l){const s=$('asgqn');if(!s)return;const{all,L}=asgItList2(l);s.textContent=(ASGQ||'').trim()?L.length+' de '+all.length+' alumno'+(all.length===1?'':'s'):''}
+function asgItQ(v){ASGQ=v;const l=ASG&&ASG.g&&asgLive(ASG.e,ASG.g),b=document.querySelector('#asgit .asgb');if(!l||!b)return;b.innerHTML=asgItRows(l);b.scrollTop=0;asgItCnt(l);aplicarFotos()}
 function asgItDraw(){const l=ASG&&ASG.g&&asgLive(ASG.e,ASG.g);if(!l||!l.i)return asgItClose();
  let m=$('asgit');if(!m){m=document.createElement('div');m.id='asgit';m.className='mdl';m.onclick=ev=>{if(ev.target===m)asgItClose()};document.body.appendChild(m)}
  const y=(m.querySelector('.asgb')||{}).scrollTop||0,L=asgItList(l);
- m.innerHTML=`<div class="mbx asgbx asgitbx"><div class="asgh"><div><b>Dar o quitar intentos</b><small>Cada alumno tiene ${l.i} intento${l.i>1?'s':''}. «+» da un intento extra y «−» lo quita.</small></div><button type="button" class="x" onclick="asgItClose()" aria-label="Cerrar">✕</button></div><div class="asgb">${L.length?L.map(a=>{const s=stt(l,a.id),ex=(l.b||{})[a.id]||0,tot=(+l.i||0)+ex;return `<div class="asgitr">${asgAv(a,34)}<span class="asgnm"><b>${e(a.n)}</b><small>Usó ${s.R.length} de ${tot} intento${tot===1?'':'s'}${ex?' ('+(ex>0?'+':'−')+Math.abs(ex)+' extra)':''}</small></span><button type="button" class="bt w sm asgmn" ${tot<=0?'disabled':''} onclick="asgAdj(event,'${l.id}','${a.id}',-1)" aria-label="Quitar un intento">−</button><button type="button" class="bt sm asgmn" onclick="asgAdj(event,'${l.id}','${a.id}',1)" aria-label="Dar un intento">+</button></div>`}).join(''):'<p class="lk">No hay alumnos asignados.</p>'}</div></div>`;
+ m.innerHTML=`<div class="mbx asgbx asgitbx"><div class="asgh"><div><b>Dar o quitar intentos</b><small>Cada alumno tiene ${l.i} intento${l.i>1?'s':''}. «+» da un intento extra y «−» lo quita.</small></div><button type="button" class="x" onclick="asgItClose()" aria-label="Cerrar">✕</button></div><div class="asgs"><input id="asgq" type="search" placeholder="Buscar alumno por nombre o DNI…" autocomplete="off" spellcheck="false" value="${e(ASGQ)}" oninput="asgItQ(this.value)"><small id="asgqn" class="mu"></small></div><div class="asgb">${asgItRows(l)}</div></div>`;asgItCnt(l);
  const n=m.querySelector('.asgb');if(n)n.scrollTop=y;aplicarFotos()}
 async function asgAdj(ev,lid,sid,d){ev.preventDefault();ev.stopPropagation();const a=DB.as.find(x=>x.id===lid);if(!a)return;
  const al=DB.al.find(z=>z.id===sid),ex=(a.b||{})[sid]||0;
@@ -3383,7 +3422,7 @@ addEventListener('beforeunload',ev=>{if(inEd()&&dirty()){ev.preventDefault();ev.
 }
 </style>
 
-\n<style id="v44-editor-layout-and-top-button">
+<style id="v44-editor-layout-and-top-button">
 /* Acciones de edición alineadas a la derecha, fuera de la tarjeta del nombre. */
 .editor-topline{justify-content:space-between}
 .editor-topline>.tbtop.tbbtns{margin-right:auto}
