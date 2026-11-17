@@ -2490,7 +2490,7 @@ function slotsTot(){let t=0;CUR.qs.forEach((q,i)=>{if(q.bonus||q.t==='lib')retur
  else t+=b.querySelectorAll('.gp,.hole').length});return t}
 function slotNote(){const R=A,h=R.querySelector(':scope>.eh');if(!h||!CUR)return;const o=R.querySelector(':scope>.slotv');if(o)o.remove();const t=slotsTot();if(!t)return;
  const v=20/t,nb=CUR.qs.some(q=>q.bonus),nl=CUR.qs.some(q=>q.t==='lib'),f=x=>(Math.round(x*100)/100).toFixed(2);
- h.insertAdjacentHTML('afterend',`<div class="slotv">ℹ️ Este examen tiene <b>${t} casillero${t===1?'':'s'} de respuesta</b> y cada uno vale <b>${f(v)} puntos</b> (20 ÷ ${t}). Ejemplo: 5 casilleros correctos = ${f(v*5)} puntos. La nota final se redondea a 1 decimal.${nb?' Las preguntas ⭐ bonus suman aparte.':''}${nl?' Las preguntas libres las califica tu capacitador.':''}</div>`)}
+ h.insertAdjacentHTML('afterend',`<div class="slotv">ℹ️ Este examen tiene <b>${t} casillero${t===1?'':'s'} de respuesta</b> y cada uno vale <b>${f(v)} puntos</b> (20 ÷ ${t}). La nota final se redondea a 1 decimal.${nb?' Las preguntas ⭐ bonus suman aparte.':''}${nl?' Las preguntas libres las califica tu capacitador.':''}</div>`)}
 const pl3=play;play=function(v,T){pl3(v,T);if(!T&&PLAY)try{slotNote();A.querySelectorAll('.q input:not([type=hidden])').forEach(x=>{x.setAttribute('autocorrect','off');x.setAttribute('autocapitalize','none');x.setAttribute('autocomplete','off');x.setAttribute('spellcheck','false')})}catch(x){console.error(x)}};
 const ck2=chk;chk=function(){
  if(!RUN){const d=$('idd'),n=$('idn'),f=$('idf');
