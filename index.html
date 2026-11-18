@@ -1634,7 +1634,7 @@ function setcfg(k,x){CUR.cf=CUR.cf||{};CUR.cf[k]=x;save()}
 const NIS=p=>`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`,
 NI={no:NIS('<path d="M4 5h16v14H4zM4 10h16M10 10v9"/>'),ev:NIS('<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>'),al:NIS('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.8 0 4.5 1.8 4.5 4.5"/>'),as:NIS('<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12l2 2 4-4M9 17h6"/>'),re:NIS('<path d="M5 20v-7M11 20V5M17 20v-10M3 20h18"/>')};
 const SUB={as:0},sp=k=>({al:pal,as:pas}[k])().split('\n'),
-navV=()=>`<div class="sbh"><span class="sbl">🎓</span><div><b>Panel docente</b><small>${e(SEDE)}${ME&&ME.n?' · '+e(ME.n):''}</small></div></div><div class="fl mn">${[['ev','Evaluaciones'],['asg','Asignaciones'],['al','Personal'],['re','Resultados'],['no','Notas']].map(([k,n])=>`<button class="fi ${VW===k?'on':''}" onclick="VW='${k}';render()"><span class="fic">${NI[k]||NI.as}</span><span class="fn">${n}</span>${k==='asg'?asgBadge():''}</button>`+(VW===k&&SUB[k]!==undefined?sp(k).map((h,i)=>`<button class="fi sbm ${(SUB[k]||0)===i?'on2':''}" onclick="SUB['${k}']=${i};render()"><span class="fn">${((h.match(/<b>([^<]*)<\/b>/)||[])[1]||'Sección').replace(/^\d+ alumnos$/,'Alumnos')}</span></button>`).join(''):'')).join('')}</div>`,nav=()=>`<div class="chips" style="justify-content:center">${[['ev','Evaluaciones'],['asg','Asignaciones'],['al','Personal'],['re','Resultados'],['no','Notas']].map(([k,n])=>`<button class="ch ${VW===k?'on':''}" onclick="VW='${k}';render()">${n}</button>`).join('')}</div>`;
+navV=()=>`<div class="sbh"><span class="sbl">🎓</span><div><b>Panel docente</b><small>${e(SEDE)}${ME&&ME.n?' · '+e(ME.n):''}</small></div></div><div class="fl mn">${[['ev','Evaluaciones'],['asg','Asignaciones'],['al','Personal'],['re','Resultados'],['no','Notas']].map(([k,n])=>`<button class="fi ${VW===k?'on':''}" onclick="VW='${k}';render()"><span class="fic">${NI[k]||NI.as}</span><span class="fn">${n}</span>${k==='asg'?asgBadge():''}</button>`+(VW===k&&SUB[k]!==undefined?sp(k).map((h,i)=>`<button class="fi sbm ${(SUB[k]||0)===i?'on2':''}" onclick="SUB['${k}']=${i};render()"><span class="fn">${((h.match(/<b>([^<]*)<\/b>/)||[])[1]||'Sección').replace(/^\d+ alumnos$/,'Alumnos')}</span></button>`).join(''):'')).join('')}<button class="fi" onclick="capRefresh()"><span class="fic">⟳</span><span class="fn">Actualizar notas</span></button></div>`,nav=()=>`<div class="chips" style="justify-content:center">${[['ev','Evaluaciones'],['asg','Asignaciones'],['al','Personal'],['re','Resultados'],['no','Notas']].map(([k,n])=>`<button class="ch ${VW===k?'on':''}" onclick="VW='${k}';render()">${n}</button>`).join('')}<button class="ch" onclick="capRefresh()">⟳ Actualizar</button></div>`;
 const lib0=lib;lib=function(){DBi();if(!ROL)return gate();if(M){if(VW!=='ev')return pan();lib0();A.querySelector('.fs').insertAdjacentHTML('afterbegin',navV());return}
  return portal()};
 function pan(){A.innerHTML='<h1>Aula</h1><div class="lb"><aside class="fs">'+navV()+'</aside><section class="ls">'+(VW==='al'?sp('al')[0]:SUB[VW]!==undefined?(sp(VW)[SUB[VW]]||sp(VW)[0]):VW==='no'?notasV():VW==='asg'?asgPanel():pre())+'</section></div>'}
@@ -2132,7 +2132,7 @@ function unite(){if(!FULL)return DB;const own=new Set((FULL.al||[]).filter(a=>a.
  Object.keys(DB).forEach(k=>{if(!KS.includes(k)&&k!=='rs'&&k!=='cp')FULL[k]=DB[k]});
  FULL.cp=cp||[];return FULL}
 async function auth(s,d,k){
- if(API){const r=await post('login',{sede:s,dni:d,clave:k});if(!r||!r.ok)return null;DB=r.db||{folders:[],evals:[]};FULL=null;DBi();return{rol:r.rol,id:r.id,ad:!!r.ad,n:r.n,c:d}}
+ if(API){const r=await post('login',{sede:s,dni:d,clave:k});if(!r||!r.ok)return null;DB=r.db||{folders:[],evals:[]};PSIG=r.sig||'';FULL=null;DBi();return{rol:r.rol,id:r.id,ad:!!r.ad,n:r.n,c:d}}
  DBi();const n=nz(d),c=DB.cp.find(x=>x.s===s&&nz(x.c)===n&&x.k===k);
  if(c)return{rol:'cap',id:c.id,ad:!!c.ad,n:c.n,c:c.c};
  const a=DB.al.find(x=>x.s===s&&nz(x.c)===n&&x.k&&x.k===k);
@@ -2943,6 +2943,24 @@ function asgDesPrev(){if(!ASG||!ASG.g)return;const cur=asgLive(ASG.e,ASG.g),inL=
 /* alumno: pantalla de espera hasta que el capacitador comience el examen */
 const pt0=portal,
 waitList=()=>DB.as.filter(a=>a.live&&!a.go&&DB.evals.some(v=>v.id===a.e)&&tg(a).some(x=>x.id===SID)&&!ovr(a,{id:SID})&&['p','re'].includes(stt(a,SID).s));
+/* v40: sondeo LIVIANO. Antes cada alumno pedía la base completa («login») cada 4-5 s: con muchos alumnos el servidor se saturaba
+ * (exámenes que no cargaban, notas que tardaban). Ahora se pregunta solo una firma barata («evalsEstado») y la base completa
+ * se descarga únicamente cuando esa firma cambió. Además, un resultado propio aún sin confirmar nunca se pisa con el del servidor. */
+let PSIG=null;
+function rsMezclar(nuevo){try{const q=rsqGet(),loc=(DB&&DB.rs)||[];
+ loc.forEach(l=>{if(l.n==null&&!l.pend)return;const pend=q[l.id]||RSTK[l.id];if(!pend)return;
+  const o=(nuevo.rs||[]).find(r=>r.id===l.id);if(o){if(o.n==null&&!o.pend){o.n=l.n;if(l.pend)o.pend=l.pend}}else if(l.al===SID){(nuevo.rs=nuevo.rs||[]).push(l)}})}catch(x){}return nuevo}
+async function pollDB(){
+ const e1=await post('evalsEstado',{});
+ if(e1&&e1.ok&&e1.sig&&e1.sig===PSIG)return{same:1};
+ const r=await post('login',{sede:SEDE,dni:ME.c,clave:KEY});
+ if(!r||!r.ok||!r.db)return null;
+ DB=rsMezclar(r.db);PSIG=r.sig||(e1&&e1.sig)||'';FULL=null;DBi();return r}
+/* v40: el capacitador trae los intentos/notas nuevos SIN salir ni perder lo que está editando (solo reemplaza los resultados) */
+async function capRefresh(){if(!API||!M||!ME)return;toast('Actualizando…');
+ try{const r=await post('login',{sede:SEDE,dni:ME.c,clave:KEY});if(!r||!r.ok||!r.db){toast((r&&r.error)||'No se pudo actualizar');return}
+  DB.rs=r.db.rs||[];try{DBi()}catch(x){}render();toast('Notas actualizadas ✔')}
+ catch(x){toast('Sin conexión: no se pudo actualizar')}}
 let PPT=0,PPX=0;
 const portSig=()=>JSON.stringify(DB.as.filter(a=>tg(a).some(x=>x.id===SID)).map(a=>[a.id,a.live||0,a.go||0,(a.l||[]).length])),
 portStop=()=>{if(PPT){clearInterval(PPT);PPT=0}},
@@ -2951,7 +2969,7 @@ async function portPoll(){
  if(PPX)return;
  if(!ROL||M||RUN||!API||!ME){portStop();return}
  PPX=1;const antes=portSig();
- try{const r=await post('login',{sede:SEDE,dni:ME.c,clave:KEY});if(!r||!r.ok||!r.db)return;DB=r.db;FULL=null;DBi()}
+ try{const r=await pollDB();if(!r)return}
  catch(x){return}
  finally{PPX=0}
  if(!ROL||M||RUN)return;
@@ -3008,9 +3026,8 @@ function waitStop(){if(WT){clearInterval(WT);WT=0}}
 async function waitPoll(){
  if(WTX)return;if(!ROL||M||RUN||!API||!ME||!WA){waitStop();return}
  WTX=1;
- try{const r=await post('login',{sede:SEDE,dni:ME.c,clave:KEY});
-  if(!r||!r.ok||!r.db)return;
-  DB=r.db;FULL=null;DBi()}
+ try{const r=await pollDB();
+  if(!r)return}
  catch(x){return}
  finally{WTX=0}
  if(!ROL||M||RUN||!WA)return;
