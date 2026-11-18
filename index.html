@@ -1591,9 +1591,34 @@ async function cargarFotosEv(){try{const r=await fetch('https://docs.google.com/
  PH=N;aplicarFotos()}catch(x){}}
 /* v38: el alumno envía su intento / nota al servidor (EV_INTENTOS → NOTAS → malla) */
 function rsPost(r){return post('evalsResultado',{rs:JSON.parse(JSON.stringify(r)),dispositivo:(navigator.userAgent||'').slice(0,120)})}
-function sendRs(n){const r=RUN&&RUN.r;if(!r)return;n=n||0;
- rsPost(r).then(x=>{if(x&&x.ok){if(r.n!=null)toast('Nota guardada ✔')}else toast((x&&x.error)||'No se pudo guardar tu resultado')})
- .catch(()=>{if(n<4)setTimeout(()=>sendRs(n+1),3000);else toast('Sin conexión: tu nota no se pudo enviar. No cierres esta página.')})}
+/* v39: el resultado se reintenta SOLO hasta que el servidor lo guarde (antes, si el servidor estaba ocupado, se perdía la nota) */
+const RSQ_K='ev_rs_pend',RSTK={};
+function rsqGet(){try{return JSON.parse(localStorage.getItem(RSQ_K)||'{}')||{}}catch(x){return{}}}
+function rsqSet(o){try{if(Object.keys(o).length)localStorage.setItem(RSQ_K,JSON.stringify(o));else localStorage.removeItem(RSQ_K)}catch(x){}}
+function rsqAdd(r){const o=rsqGet();o[r.id]={r:JSON.parse(JSON.stringify(r)),s:SEDE,k:KEY,d:ME&&ME.c};rsqSet(o)}
+function rsqDel(id){const o=rsqGet();delete o[id];rsqSet(o)}
+const rsBusy=x=>/candado|lock|tiempo de espera|timed? ?out|ocupad|servicio|service|intenta de nuevo|try again/i.test(String(x&&(x.error||x.e||x.msg||x.message)||''));
+function rsBanner(t,c){let b=document.getElementById('rsbn');if(!t){if(b)b.remove();return}
+ if(!b){b=document.createElement('div');b.id='rsbn';b.style.cssText='position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:99999;max-width:92vw;padding:10px 16px;border-radius:12px;font:700 14px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.25);text-align:center';document.body.appendChild(b)}
+ b.textContent=t;b.style.background=c||'#fff3cd';b.style.color='#3b2f00'}
+function rsPostC(it){return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'evalsResultado',clave:it.k,sede:it.s,dni:it.d,rs:it.r,dispositivo:(navigator.userAgent||'').slice(0,120)})}).then(r=>r.json())}
+/* envía un resultado con reintentos (espera creciente). it={r,s,k,d} */
+function rsEnviar(it,n){n=n||0;const id=it.r.id,tk=RSTK[id]=(RSTK[id]||0)+(n?0:1),mio=RSTK[id];
+ if(!n&&it.r.n!=null)rsBanner('Guardando tu nota… no cierres esta página');
+ const again=()=>{if(RSTK[id]!==mio)return;if(n>=20){rsBanner('⚠ No se pudo guardar tu nota. NO cierres esta página y avisa a tu capacitador.','#f8d7da');return}
+  setTimeout(()=>rsEnviar(it,n+1),Math.min(2000+n*1500,12000)+Math.random()*1500)};
+ rsPostC(it).then(x=>{if(RSTK[id]!==mio)return;
+  if(x&&x.ok){rsqDel(id);if(it.r.n!=null){rsBanner('✔ Nota guardada','#d4edda');setTimeout(()=>rsBanner(''),2500)}else rsBanner('');return}
+  if(rsBusy(x)||(x&&!x.error)){again();return}
+  rsqDel(id);rsBanner('');toast((x&&x.error)||'No se pudo guardar tu resultado')})
+ .catch(()=>again())}
+function sendRs(){const r=RUN&&RUN.r;if(!r)return;
+ if(r.n!=null||r.pend)rsqAdd(r);
+ rsEnviar({r:JSON.parse(JSON.stringify(r)),s:SEDE,k:KEY,d:ME&&ME.c},0)}
+/* si el alumno cerró la página antes de que se guardara, se reenvía al volver a entrar */
+function rsqFlush(){const o=rsqGet();Object.keys(o).forEach(id=>{const it=o[id];if(it&&it.r&&it.s===SEDE&&String(it.d)===String(ME&&ME.c)&&!RSTK[id])rsEnviar(it,0)})}
+/* iniciar el examen: si el servidor está ocupado, reintenta unos segundos antes de rendirse */
+async function rsIniciar(r){let x=null;for(let n=0;n<6;n++){x=await rsPost(r);if(x&&x.ok)return x;if(!rsBusy(x))return x;await new Promise(z=>setTimeout(z,1500+n*1000+Math.random()*1000))}return x}
 /* v37: temática del examen + nota que se registra (va a NOTAS → malla del capacitador) */
 const MODN=[['MADERAS',4,1],['FERRETERÍA',4,1],['SINTÉTICOS',4,1],['PROYECTOS / OPT.',4,1],['DOCUMENTACIÓN',3,0],['FACTURACIÓN',3,0]];
 function campoDe(v){const m=/^(.*?)\s+(PC\d|Teórico|Códigos)$/i.exec(String(v.campo||'').trim());return{m:v.cmod!=null?v.cmod:(m?m[1]:''),t:v.cnt!=null?v.cnt:(m?m[2]:'')}}
@@ -1822,7 +1847,7 @@ function portal(){const al=DB.al.find(x=>x.id===SID);if(!al){return salir()}
  A.innerHTML=`<div style="max-width:680px;margin:0 auto"><div class="pe" style="display:flex;justify-content:center;margin-bottom:6px">${peAv(al,72)}</div><h1>Hola, ${e(al.n.split(' ')[0])}</h1><p class="lk">${e(al.a)}${al.g?' · '+e(gname(al)):''} · ${e(SEDE)} · <a href="#" onclick="salir();return false">Salir</a></p>${DB.as.filter(a=>tg(a).some(x=>x.id===SID)&&DB.evals.some(v=>v.id===a.e)&&!ovr(a,{id:SID})).map(a=>{const s=stt(a,SID),can=s.s==='p'||s.s==='re';return `<div class="rw"><span class="ric">${li('doc',20)}</span><div class="rn"><b>${e(s.v.n)}</b><small>${s.v.qs.length} preguntas${s.c.min?' · '+s.c.min+' min':''}${s.left!=null?' · '+s.left+' intento(s)':''}${a.d?' · vence '+a.d:''}${s.F.length?' · mejor nota '+s.best.toFixed(1)+'/20':''}</small></div><span class="eb ${LB[s.s][1]}">${LB[s.s][0]}</span>${can?`<button class="bt sm" onclick="go('${a.id}')">${s.R.length?'Reintentar':'Comenzar'}</button>`:''}</div>`}).join('')||'<p class="lk">No tienes exámenes asignados todavía.</p>'}</div>`}
 async function go(aid){const a=DB.as.find(x=>x.id===aid),s=stt(a,SID),c=s.c;
  if(!await dlg({t:s.v.n,m:`${s.v.qs.length} preguntas · ${c.min?c.min+' min':'sin límite de tiempo'} · apruebas con ${c.ap}/20. Al comenzar se cuenta un intento.`+(c.ins?' '+c.ins:''),ok:'Comenzar'}))return;
- const r={id:uid(),al:SID,e:a.e,as:aid,n:null,at:Date.now()};if(API&&!M){try{const x=await rsPost(r);if(!x||!x.ok)return toast((x&&x.error)||'No se pudo iniciar el examen')}catch(z){return toast('Sin conexión: no se pudo iniciar el examen')}}DB.rs.push(r);save(API&&!M?0:1);
+ const r={id:uid(),al:SID,e:a.e,as:aid,n:null,at:Date.now()};if(API&&!M){try{toast('Iniciando examen…');const x=await rsIniciar(r);if(!x||!x.ok)return toast((x&&x.error)||'No se pudo iniciar el examen. Intenta de nuevo.')}catch(z){return toast('Sin conexión: no se pudo iniciar el examen')}}DB.rs.push(r);save(API&&!M?0:1);
  CUR=JSON.parse(JSON.stringify(s.v));if(c.mz)CUR.qs=sh(CUR.qs);PLAY=true;ED=false;RUN={a:aid,t:Date.now(),r,done:0};render();tmr(c.min)}
 function finalizarDlg(){return new Promise(res=>{
  const w=document.createElement('div');w.className='mdl';w.setAttribute('role','alertdialog');w.setAttribute('aria-modal','true');
@@ -2133,7 +2158,7 @@ async function gIn(){const d=$('gd').value.trim(),k=$('gk').value.trim(),b=$('gb
  enter(r,GATE.s,k)}
 function enter(r,s,k){GF.n=0;ROL=r.rol;SEDE=s;KEY=k;ME={id:r.id,ad:r.ad,n:r.n,c:r.c};M=ROL==='cap';SID=M?null:r.id;
  if(!API){if(M)claim(s);view(s)}
- VW='ev';CUR=null;PLAY=false;ED=false;GATE.s='';render();cargarFotosEv()}
+ VW='ev';CUR=null;PLAY=false;ED=false;GATE.s='';render();cargarFotosEv();if(!M&&API)setTimeout(()=>{try{rsqFlush()}catch(x){}},1500)}
 function gSetup(){A.innerHTML=`<div style="max-width:420px;margin:40px auto"><div class="box" style="text-align:center"><h1>Primer ingreso</h1><p class="lk">Crea el capacitador administrador de <b>${e(GATE.s)}</b>. Lo que ya tenías guardado en este equipo quedará en esta sede.</p><input id="gsn" placeholder="Nombre y apellido"><input id="gsd" placeholder="DNI" inputmode="numeric"><input id="gsk1" type="password" placeholder="Clave (mínimo 4 caracteres)"><input id="gsk2" type="password" placeholder="Repite la clave" onkeydown="if(event.key==='Enter')gSetupGo()"><div class="row" style="justify-content:center"><button class="bt w" onclick="render()">Volver</button><button class="bt" onclick="gSetupGo()">Crear y entrar</button></div></div></div>`}
 function gSetupGo(){DBi();if(DB.cp.length)return render();
  const n=$('gsn').value.trim(),d=$('gsd').value.trim(),k=$('gsk1').value.trim();
