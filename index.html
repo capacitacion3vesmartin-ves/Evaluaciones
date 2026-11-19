@@ -1137,7 +1137,7 @@ body:has(.wfull){overflow:hidden}
 </style>
 
 </head><body>
-<div class="bn" id="bn"></div><div id="app"></div><div id="t"></div>
+<div class="bn" id="bn"></div><a id="vmc" class="vmc" href="https://capacitacion3vesmartin-ves.github.io/capacitaciondeingreso/" target="_top" onclick="vmcGo(event);return false">Volver a Mis calificaciones</a><div id="app"></div><div id="t"></div>
 <script id="cfg" type="application/json">{"api":"https://script.google.com/macros/s/AKfycbyoSgU7Eghe2E9mk-86ONnAEeQGPUktuahiGT4gzX10sxAF_KUturH-c0GTR2IhMck/exec","sedes":["Villa el Salvador","Puente Piedra","Piura","Arequipa"]}</script>
 <script>
 const $=id=>document.getElementById(id),A=$('app'),CFG=(()=>{try{return JSON.parse($('cfg').textContent)}catch(x){return{}}})(),API=CFG.api||'';
@@ -4145,4 +4145,34 @@ inject();
 .asgpd summary{cursor:pointer;font-weight:800;color:var(--c)}
 .asgpd div{font-size:12px;color:var(--mu);margin-top:4px;max-width:260px;font-weight:600}
 </style>
+<style id="vmcs">
+.vmc{position:fixed;z-index:95;top:9px;left:8px;width:224px;box-sizing:border-box;padding:6px 10px;border-radius:18px;background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.28);font:700 12px/1.4 "Plus Jakarta Sans",Poppins,"Segoe UI",system-ui,sans-serif;text-align:center;text-decoration:none;white-space:nowrap;cursor:pointer;transition:background .15s}
+.vmc:hover{background:rgba(255,255,255,.26)}.vmc:focus-visible{outline:3px solid #ffd54a;outline-offset:2px}
+body.vmc-off .vmc{display:none!important}
+body:not(.vmc-off) .bn button[style*="left"]{left:238px!important}
+body:has(.wfull) .vmc{top:9px!important}
+html body .wback{top:52px}
+@media(max-width:979px){
+body:not(.vmc-off){padding-top:90px}
+body:not(.vmc-off) .bn{height:86px;align-items:flex-start;padding-top:14px}
+body:not(.vmc-off) .vmc{top:49px}
+body:not(.vmc-off) .bn button[style*="left"]{top:49px;bottom:auto}
+body:not(.vmc-off) .bn button[style*="right"]{top:9px;bottom:auto}
+body:not(.vmc-off) .side,body:not(.vmc-off) .fs{top:100px}
+body:not(.vmc-off) .ed .side{top:102px;max-height:calc(100vh - 104px)}
+body:not(.vmc-off) .pvb{top:90px}
+body:not(.vmc-off) .svnote{top:98px}
+body:not(.vmc-off) #sc,body:not(.vmc-off) .eh{scroll-margin-top:98px}
+body:not(.vmc-off) .wait{min-height:calc(100vh - 102px)}
+}
+</style>
+<script>
+const VMC_URL="https://capacitacion3vesmartin-ves.github.io/capacitaciondeingreso/";
+function vmcSync(){try{document.body.classList.toggle('vmc-off',!!exAct())}catch(x){}}
+(function(){const b0=bn;bn=function(){const r=b0.apply(this,arguments);vmcSync();return r}})();
+setInterval(vmcSync,250);vmcSync();
+async function vmcGo(ev){ev.preventDefault();try{if(exAct())return;if(typeof inEd==='function'&&inEd()&&!(await salida()))return}catch(x){}
+ try{NOW=1}catch(x){}
+ try{window.top.location.href=VMC_URL}catch(x){location.href=VMC_URL}}
+</script>
 </body></html>
