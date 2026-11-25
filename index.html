@@ -573,6 +573,9 @@ input.qcq.ok+.qxr{background:#dcfce7}input.qcq.bad+.qxr{background:#ffe4ea}
 .box.q:not(.fin) input.gp.pend::placeholder{color:#d97706;opacity:.8;font-weight:800}
 .pendn{align-self:center;font-weight:800;font-size:13px;color:#b45309;background:#fffbe6;border:2px dashed #f59e0b;border-radius:20px;padding:5px 12px}
 .pendn:empty{display:none}
+@keyframes pgop{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0)}50%{box-shadow:0 0 0 8px rgba(245,158,11,.55)}}
+.pgo{outline:3px solid #f59e0b!important;outline-offset:3px;border-radius:10px;animation:pgop .7s ease-in-out 4}
+.box.q.pgb{border-color:#f59e0b}
 /* ===== ENCABEZADO CONFIGURABLE ===== */
 .eh{position:relative;overflow:hidden;container-type:inline-size;background:#fff;border:2px solid var(--dc,#16335f);border-radius:14px;padding:8px 10px;margin:6px 0 10px}
 .eh.cor{padding:20px 10px 18px}
@@ -1157,7 +1160,7 @@ function save(srv){clearTimeout(PT);if(ED&&!PLAY&&CUR&&$("pv"))PT=setTimeout(pvr
 async function load(){cargarFotosEv();if(API){try{localStorage.removeItem('ev_db')}catch(x){}}else{try{DB=JSON.parse(localStorage.getItem('ev_db'))||DB}catch(x){}}
  DBi();
  render()}
-function bn(){const run=!!(RUN&&!RUN.done);$('bn').innerHTML=(CUR?'<button style="left:8px" onclick="back()">← '+(M&&ED?'Volver':'Inicio')+'</button>':'')+'<span class="bnt">EVALUACIONES'+(SEDE?' · '+e(String(SEDE).toUpperCase()):'')+'</span>'+(ROL&&!run?'<button style="right:8px'+(M?';background:#e11d48;color:#fff':'')+'" onclick="salir()">Salir</button>':'')}
+function bn(){const run=!!(RUN&&!RUN.done);$('bn').innerHTML=((CUR||(!run&&!RUN&&(ROL||GATE.s)))?'<button style="left:8px" onclick="'+(CUR?'back()':'volverIni()')+'">← Volver</button>':'')+'<span class="bnt">EVALUACIONES'+(SEDE?' · '+e(String(SEDE).toUpperCase()):'')+'</span>'+(ROL&&!run?'<button style="right:8px'+(M?';background:#e11d48;color:#fff':'')+'" onclick="salir()">Salir</button>':'')}
 function render(){document.body.classList.toggle('w',!CUR||(M&&!PLAY));bn();CUR?(PLAY?play(CUR):edit(CUR)):lib();scrollTo(0,0)}
 function back(){if(PLAY&&M&&ED){PLAY=false}else{if(CUR&&M)save(1);CUR=null;PLAY=false}render()}
 
@@ -1559,7 +1562,7 @@ function pq0(q){
  const ch=sh(its.map(x=>({img:x.img,k:K.findIndex(z=>z.n===nz(x.r))})));
  return `<div class="bank imb">${ch.map(x=>`<span class="chip ic" draggable="true" data-k="${x.k}"><img src="${x.img}" draggable="false">${ZM}</span>`).join('')}</div><div class="cj">${K.map((k,n)=>`<div class="cs"${k.col?` style="${ccv(k.col)}"`:''}><div class="hole${k.c>1?' multi':''}" data-k="${n}"></div><b>${e(k.t)}</b>${k.d?`<div class="cd"><span>CÓDIGO</span><input class="cdv" maxlength="6" autocomplete="off" spellcheck="false" data-a="${e(k.d)}"></div>`:''}</div>`).join('')}</div>`}
 function play(v,T){play0(v,T);fitAll(T||A)}
-function play0(v,T){const fb=v.qs.findIndex(q=>q.bonus);(T||A).innerHTML=`<h1>${e(v.n)}</h1>`+v.qs.map((q,i)=>`${i===fb?'<div class="bxsep">⭐ Preguntas bonus <small>suman puntos extra</small></div>':''}<div class="box q${q.bonus?' qbonus':''}" id="q${i}"><span class="tag">${i+1}</span>${q.bonus?`<span class="tag" style="background:#d97706">⭐ Bonus +${+q.pts||0} pts</span>`:''}<div class="ins" style="display:inline">${fmb(q.ins)}</div>${q.t==='lin'||q.t==='rim'?'<p class="hint lnh">Cómo unir: toca un elemento de la izquierda y luego su pareja en la derecha; se dibujará una línea. Para cambiarla, vuelve a tocar.</p>':''}<div style="margin-top:8px">${pq(q)}</div><p class="rs"></p></div>`).join('')+`<div id="sc"></div><div class="bar bps"><button class="bt" data-ck onclick="chk()">Comprobar</button><button class="bt w" onclick="play(CUR)">Reiniciar</button></div>`}
+function play0(v,T){const fb=v.qs.findIndex(q=>q.bonus);(T||A).innerHTML=`<h1>${e(v.n)}</h1>`+v.qs.map((q,i)=>`${i===fb?'<div class="bxsep">⭐ Preguntas bonus <small>suman puntos extra</small></div>':''}<div class="box q${q.bonus?' qbonus':''}" id="q${i}"><span class="tag">${i+1}</span>${q.bonus?`<span class="tag" style="background:#d97706">⭐ Bonus +${+q.pts||0} pts</span>`:''}<div class="ins" style="display:inline">${fmb(q.ins)}</div>${q.t==='lin'||q.t==='rim'?'<p class="hint lnh">Cómo unir: toca un elemento de la izquierda y luego su pareja en la derecha; se dibujará una línea. Para cambiarla, vuelve a tocar.</p>':''}<div style="margin-top:8px">${pq(q)}</div><p class="rs"></p></div>`).join('')+`<div id="sc"></div><div class="bar bps"><button class="bt" data-ck onclick="chkGo()">Comprobar</button><button class="bt w" onclick="play(CUR)">Reiniciar</button></div>`}
 function vfs(b,v){if(b.closest('.fin'))return;const r=b.closest('.vfr');r.dataset.s=v;r.querySelectorAll('button').forEach((x,k)=>x.classList.toggle('s',(k===0)===!!v))}
 function chk(){let ok=0,tot=0;BX=[];CUR.qs.forEach((q,i)=>{const b=$('q'+i);let o=0,t=0;const mk=(el,g)=>{t++;o+=g?1:0;el.classList.remove('ok','bad');el.classList.add(g?'ok':'bad')};
  if(q.t==='mc'){const cs=mcC(q).filter(j=>String(q.op[j]||'').trim()),S=[...b.querySelectorAll('.mc.s')];b.querySelectorAll('.mc').forEach(x=>x.classList.remove('ok','bad'));let ac=0,er=0;S.forEach(x=>{const g=cs.includes(+x.dataset.j);x.classList.add(g?'ok':'bad');g?ac++:er++});t=Math.max(cs.length,1);o=Math.max(0,ac-er)}else if(q.t==='lin'||q.t==='rim'){const w=b.querySelector('.ln'),m=w._m||new Map();w.children[1].querySelectorAll('.nd').forEach(l=>{const r=m.get(l),g=!!r&&nz(r.dataset.a)===nz(l.dataset.a);l.dataset.st=g?1:0;mk(l,g)});lnd(w)}else if(q.t==='ord'){b.querySelectorAll('.od').forEach((r,p)=>mk(r,+r.dataset.k===p))}else if(q.t==='cla'||q.t==='par'){b.querySelectorAll('.chip').forEach(c=>mk(c,c.parentNode.classList.contains('hole')&&c.parentNode.dataset.k===c.dataset.k));b.querySelectorAll('input.cdv').forEach(g=>mk(g,nzs(g.value)===nzs(g.dataset.a)))}else if(q.t==='vf')b.querySelectorAll('.vfr').forEach(r=>mk(r,r.dataset.s===r.dataset.v));
@@ -1630,6 +1633,8 @@ function sendRs(){const r=RUN&&RUN.r;if(!r)return;
  if(r.n!=null||r.pend)rsqAdd(r);
  rsEnviar({r:JSON.parse(JSON.stringify(r)),s:SEDE,k:KEY,d:ME&&ME.c},0)}
 /* si el alumno cerró la página antes de que se guardara, se reenvía al volver a entrar */
+/* v71: un resultado YA TERMINADO que el servidor aún no confirmó jamás vuelve a verse como «en curso» (evita reabrir el mismo examen y pisar la nota) */
+function rsqAplicar(db,sede,dni){try{if(!db)return db;const q=rsqGet();Object.keys(q).forEach(id=>{const it=q[id];if(!it||!it.r||it.s!==sede||dni0(it.d)!==dni0(dni))return;if(it.r.n==null&&!it.r.pend)return;db.rs=db.rs||[];const o=db.rs.find(r=>r.id===id);if(!o)db.rs.push(JSON.parse(JSON.stringify(it.r)));else if(o.n==null&&!o.pend)Object.assign(o,JSON.parse(JSON.stringify(it.r)))})}catch(x){console.warn('rsqAplicar',x)}return db}
 function rsqFlush(){const o=rsqGet();Object.keys(o).forEach(id=>{const it=o[id];if(it&&it.r&&it.s===SEDE&&String(it.d)===String(ME&&ME.c)&&!RSTK[id])rsEnviar(it,0)})}
 /* iniciar el examen: si el servidor está ocupado, reintenta unos segundos antes de rendirse */
 async function rsIniciar(r){let x=null;for(let n=0;n<6;n++){x=await rsPost(r);if(x&&x.ok)return x;if(!rsBusy(x))return x;await new Promise(z=>setTimeout(z,1500+n*1000+Math.random()*1000))}return x}
@@ -1748,7 +1753,7 @@ function addAr(){const n=$('nar').value.trim();if(n&&!AR().includes(n)){DB.ar=[.
 function delAr(i){DB.ar=AR().filter((_,k)=>k!==i);sv()}
 function bulk(){$('abk').value.split('\n').forEach(l=>{const[n,c,a]=l.split(/[,;\t]/).map(s=>s.trim());if(n&&c&&!DB.al.some(x=>nz(x.c)===nz(c))){DB.al.push({id:uid(),n,c,a:a||AR()[0]});if(a&&!AR().includes(a))DB.ar=[...AR(),a]}});sv()}
 /* asignaciones */
-function pas(){return `<div class="box"><b>Asignar examen</b><div class="row"><select id="se">${DB.evals.map(v=>`<option value="${v.id}">${e(v.n)}</option>`).join('')}</select><select id="st2"><optgroup label="Por grupo">${DB.gr.map(g=>`<option value="g|${g.id}">Grupo: ${e(g.n)}</option>`).join('')}</optgroup><optgroup label="Por área"><option value="a|*">Toda la sede</option>${AR().map(a=>`<option value="a|${e(a)}">Área: ${e(a)}</option>`).join('')}</optgroup><optgroup label="Excepción individual">${DB.al.map(x=>`<option value="s|${x.id}">${e(x.n)}</option>`).join('')}</optgroup></select><label class="hint">Fecha límite <input id="sd" type="date" style="flex:none"></label><label class="hint">Intentos <input id="si" type="number" min="0" value="1" style="flex:none;width:70px" title="0 = sin límite"></label><button class="bt" onclick="asg()">Asignar</button></div></div>
+function pas(){return `<div class="box"><b>Asignar examen</b><div class="row"><select id="se">${DB.evals.map(v=>`<option value="${v.id}">${e(v.n)}</option>`).join('')}</select><select id="st2"><optgroup label="Por grupo">${DB.gr.map(g=>`<option value="g|${g.id}">Grupo: ${e(g.n)}</option>`).join('')}</optgroup><optgroup label="Por área"><option value="a|*">Toda la sede</option>${AR().map(a=>`<option value="a|${e(a)}">Área: ${e(a)}</option>`).join('')}</optgroup><optgroup label="Excepción individual">${DB.al.filter(asgAct).map(x=>`<option value="s|${x.id}">${e(x.n)}</option>`).join('')}</optgroup></select><label class="hint">Fecha límite <input id="sd" type="date" style="flex:none"></label><label class="hint">Intentos <input id="si" type="number" min="0" value="1" style="flex:none;width:70px" title="0 = sin límite"></label><button class="bt" onclick="asg()">Asignar</button></div></div>
 <div class="box"><b>Asignaciones</b>${DB.as.map(a=>{const v=DB.evals.find(v=>v.id===a.e),T=tg(a),dn=T.filter(x=>stt(a,x.id).s==='ok').length;return `<div class="rw" style="margin-top:8px"><div class="rn"><b>${e(v?v.n:'(examen eliminado)')}</b><small>${a.t==='l'?'Grupo '+e((DB.gr.find(g=>g.id===a.w)||{}).n||'(eliminado)')+' · '+(a.l||[]).length+' alumno(s) · '+(a.go?'en curso':'esperando inicio'):a.t==='g'?'Grupo '+e((DB.gr.find(g=>g.id===a.w)||{}).n||'(eliminado)'):a.t==='a'?(a.w==='*'?'Toda la sede':'Área '+e(a.w)):'Individual: '+e((DB.al.find(x=>x.id===a.w)||{}).n)} · ${a.d?'vence '+a.d:'sin fecha límite'} · ${a.i?a.i+' intento'+(a.i>1?'s':''):'intentos sin límite'}</small></div><span class="rf">${dn}/${T.length} aprobaron</span><button class="bt w sm dz2" onclick="unas('${a.id}')">Quitar</button></div>`}).join('')||'<p class="lk">Aún no hay asignaciones.</p>'}</div>`}
 function asg(){if(!DB.evals.length)return toast('Crea una evaluación primero');const[t,...w]=$('st2').value.split('|');DB.as.push({id:uid(),e:$('se').value,t,w:w.join('|'),d:$('sd').value,i:Math.max(0,+$('si').value||0)});sv()}
 function unas(id){DB.as=DB.as.filter(a=>a.id!==id);sv()}
@@ -1765,8 +1770,150 @@ async function verExamen(id){const w=document.createElement('div');w.className='
  w.innerHTML='<div class="mbx nt-img"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b>Examen rendido</b><button type="button" class="bt w sm" data-x>✕</button></div><div class="nt-im" id="ntim"><p class="lk">Cargando imagen del examen…</p></div></div>';w.querySelector('[data-x]').onclick=end;document.body.appendChild(w);
  try{const x=await post('evalsSnapshotGet',{id});const b=$('ntim');if(!b)return;if(x&&x.ok&&x.img){b.innerHTML='<img alt="Examen" src="'+(/^data:|^https:/.test(x.img)?x.img:'')+'">'}else b.innerHTML='<p class="lk">'+e((x&&x.error)||'No hay imagen guardada para este intento.')+'</p>'}catch(z){const b=$('ntim');if(b)b.innerHTML='<p class="lk">No se pudo cargar la imagen (sin conexión).</p>'}}
 function h2cLoad(){return window.html2canvas?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
-async function snapExamen(r){if(!API||M||!r)return;try{await h2cLoad();await new Promise(z=>setTimeout(z,300));const el=A,cv=await html2canvas(el,{scale:1,useCORS:true,backgroundColor:'#ffffff',logging:false,windowWidth:Math.max(el.scrollWidth,800),ignoreElements:n=>n.classList&&(n.classList.contains('er-back')||n.classList.contains('mdl'))});let c=cv;if(cv.height>14000){const f=14000/cv.height;c=document.createElement('canvas');c.width=Math.round(cv.width*f);c.height=14000;c.getContext('2d').drawImage(cv,0,0,c.width,c.height)}
-  const img=c.toDataURL('image/jpeg',.72);for(let n=0;n<3;n++){try{const x=await post('evalsSnapshot',{id:r.id,alumno:(DB.al.find(z=>z.id===r.al)||{}).n||'',examen:(DB.evals.find(z=>z.id===r.e)||{}).n||'',nota:r.n,img});if(x&&x.ok)return;}catch(z){}await new Promise(z=>setTimeout(z,3000))}}catch(z){}}
+/* ===== IMAGEN FINAL DEL EXAMEN v2: respuestas del alumno + correctas, sin recortes ni superposiciones ===== */
+const SNCSS=`
+.sn,.sn *{animation:none!important;transition:none!important}
+.sn .box,.sn .q,.sn .tbw,.sn .fbw,.sn .cj,.sn .cx,.sn .calw,.sn .calg{overflow:visible!important}
+.sn .q{font-kerning:none;text-rendering:geometricPrecision}
+.sn .q *:not(.qxs){letter-spacing:normal}
+.sn .sn-v{display:inline-block;box-sizing:border-box;min-width:46px;max-width:100%;padding:3px 9px;margin:2px 3px;border:2px solid #94a3b8;border-radius:8px;background:#fff;font-weight:700;line-height:1.3;text-align:center;vertical-align:middle;white-space:normal;overflow-wrap:anywhere;word-break:break-word;color:#13302a}
+.sn .sn-v.ok{border-color:#16a34a;background:#dcfce7;color:#14532d}
+.sn .sn-v.bad{border-color:#e11d48;background:#ffe4ea;color:#9f1239}
+.sn .sn-v.e{font-style:italic;font-weight:600}
+.sn td .sn-v,.sn .nma .sn-v,.sn .cd .sn-v{display:block;margin:0;width:100%}
+.sn .sn-c{display:inline-block;box-sizing:border-box;max-width:100%;margin:2px 3px;padding:2px 8px;border:1.5px dashed #16a34a;border-radius:7px;background:#f0fdf4;color:#166534;font-size:12px;font-weight:800;line-height:1.3;font-style:normal;white-space:normal;overflow-wrap:anywhere;vertical-align:middle}
+.sn td .sn-c,.sn .nma .sn-c,.sn .cd .sn-c{display:block;margin:3px auto 0;text-align:center}
+.sn div.sn-c{display:block;text-align:center}
+.sn .od{flex-wrap:wrap}.sn .od .sn-c{flex:none}
+.sn .nd{flex-wrap:wrap}.sn .nd .sn-c{flex:1 0 100%;margin:3px 0 0}
+.sn-b{position:absolute;left:-9px;top:-9px;width:22px;height:22px;border-radius:50%;color:#fff;font-weight:800;font-size:13px;line-height:22px;text-align:center;z-index:3}
+.sn-b.g{background:#16a34a}.sn-b.r{background:#e11d48}
+.sn .sn-t{display:inline-block;float:right;margin-left:10px;padding:0 8px;border-radius:999px;background:#fff;font-style:normal;font-size:12px;font-weight:800;line-height:20px}
+.sn .sn-t.g{color:#166534;border:1.5px solid #16a34a}.sn .sn-t.r{color:#9f1239;border:1.5px solid #e11d48}
+.sn .mc.sn-miss{border:2px dashed #16a34a!important;background:#f0fdf4!important;color:#13302a}
+.sn .sn-cc{display:block;margin-top:2px;padding:1px 5px;border-radius:5px;background:#fff;color:#9f1239;font-size:11px;font-weight:800;line-height:1.2;white-space:normal;text-align:center}
+.sn .sn-cc.g{color:#166534}
+.sn .chip.ic .sn-cc{min-width:70px;max-width:130px}
+.sn .hole{height:auto!important;min-height:30px}
+.sn .hole .sn-v{display:inline-block;margin:1px 2px;white-space:normal}
+.sn .hole .chip{visibility:visible!important;opacity:1!important}
+.sn .hole .chip,.sn .hole.multi .chip,.sn .bank .chip{height:auto!important;line-height:1.3!important;white-space:normal!important}
+.sn .chip.ic{line-height:0!important}.sn .chip.ic .sn-cc{line-height:1.2}
+.sn .hole .sn-ph{padding:0 6px;font-size:12px;font-style:italic;color:#9f1239}
+.sn .sn-c.sn-p{border-style:solid;border-color:#16a34a;background:#dcfce7;color:#14532d}
+.sn .sn-c.sn-p.bad{border-color:#e11d48;background:#ffe4ea;color:#9f1239}
+.sn .hole .chip img,.sn .chip.ic img{display:block!important;visibility:visible!important;opacity:1!important}
+.sn .sn-ch{display:inline-block;width:22px;height:30px;margin:0 3px;border-bottom:2px solid #13302a;font-size:15px;font-weight:800;line-height:30px;text-align:center;text-transform:uppercase}
+.sn .sn-lib{white-space:pre-wrap;overflow-wrap:anywhere;border:2px solid #cfdcd2;border-radius:10px;background:#fff;padding:10px 12px;min-height:40px}
+.sn .vfr[data-v]{flex-wrap:wrap}.sn .vfr[data-v] .sn-c{margin-left:auto}
+.sn .sn-leg{display:flex;flex-wrap:wrap;gap:4px 14px;margin:4px 0 2px;font-size:12px;font-weight:700}
+.sn .sn-leg .g{color:#16a34a}.sn .sn-leg .r{color:#e11d48}.sn .sn-leg .d{color:#166534}
+.sn .ln svg{overflow:visible}
+`;
+const snEsc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),
+ snAlt=a=>String(a||'').split('|').map(x=>x.trim()).filter(Boolean).slice(0,3).join(' / ');
+function snFix(src,el,d){
+ const mk=(t,c,h)=>{const n=d.createElement(t);if(c)n.className=c;if(h!=null)n.innerHTML=h;return n},Q=s=>[...el.querySelectorAll(s)];
+ el.classList.add('sn');const st=d.createElement('style');st.textContent=SNCSS;d.head.appendChild(st);
+ /* 1) campos: se reemplazan por texto visible (valor del alumno) y, si falló, la respuesta correcta */
+ const S=[...src.querySelectorAll('input,select,textarea')],D=[...el.querySelectorAll('input,select,textarea')];
+ S.forEach((s,i)=>{const x=D[i];if(!x||!x.parentNode)return;const ty=(s.type||'').toLowerCase(),tg=s.tagName;
+  if(ty==='hidden'){if(s.classList.contains('qcq')&&s.classList.contains('bad')){const td=x.closest('td'),r=td&&td.querySelector('.qxr');if(r)r.insertAdjacentElement('afterend',mk('div','sn-c','✔ Correcto: '+snEsc(snAlt(s.dataset.a))))}return}
+  if(ty==='checkbox'||ty==='radio'||ty==='file'||ty==='button'||ty==='range'||ty==='color')return;
+  if(x.classList.contains('qxc')){x.replaceWith(mk('span','sn-ch',snEsc(s.value||'')));return}
+  let v=tg==='SELECT'?(s.selectedIndex>0||s.value?((s.options[s.selectedIndex]||{}).text||''):''):s.value;v=String(v==null?'':v);
+  if(tg==='TEXTAREA'){x.replaceWith(mk('div','sn-lib',v.trim()?snEsc(v):'<i>(sin respuesta)</i>'));return}
+  const k=s.classList.contains('ok')?'ok':s.classList.contains('bad')?'bad':'',n=mk('span','sn-v '+k+(v.trim()?'':' e'),v.trim()?snEsc(v):'sin responder');
+  x.replaceWith(n);
+  if(k==='bad'&&s.dataset.a)n.insertAdjacentElement('afterend',mk('span','sn-c','✔ Correcta: '+snEsc(snAlt(s.dataset.a))))});
+ /* 2) cabecera con datos del alumno y limpieza de controles */
+ const ib=el.querySelector('.idb');if(ib&&typeof hdStatic==='function')try{ib.innerHTML=hdStatic()}catch(x){}
+ Q('.bar,.zm,.calbtn,.lnh,.dlw,.er-back,.mdl,.qans,.pendn,.oab,.cxx').forEach(x=>x.remove());
+ Q('[draggable]').forEach(x=>x.removeAttribute('draggable'));
+ /* v41: lo que el alumno soltó en cada casillero (palabra o imagen) se reconstruye desde la pantalla real para que SIEMPRE salga en la imagen */
+ {const SH=[...src.querySelectorAll('.hole')],DH=Q('.hole');
+  SH.forEach((sh,i)=>{const dh=DH[i];if(!dh)return;const cs=[...sh.querySelectorAll('.chip')];if(!cs.length)return;
+   const hk=sh.classList.contains('ok')?'ok':sh.classList.contains('bad')?'bad':'';
+   dh.innerHTML='';
+   cs.forEach(c=>{
+    if(c.classList.contains('ic')||c.hasAttribute('data-k')){
+     const n=d.importNode(c,true);n.removeAttribute('draggable');n.querySelectorAll('.zm,.cxx').forEach(z=>z.remove());n.querySelectorAll('[draggable]').forEach(z=>z.removeAttribute('draggable'));
+     /* v43: la imagen se redibuja en un canvas con la imagen ya cargada de la pantalla real, para que siempre salga en la captura */
+     if(!window.SNSAFE){const si=[...c.querySelectorAll('img')],ni=[...n.querySelectorAll('img')];
+      ni.forEach((im,k)=>{const o=si[k];if(!o||!o.complete||!o.naturalWidth)return;
+       try{const r=o.getBoundingClientRect(),nw=o.naturalWidth,nh=o.naturalHeight,dh=r.height>4?r.height:56,dw=r.width>4?r.width:dh*nw/nh,
+        k2=Math.min(1,400/Math.max(nw,nh)),cv=d.createElement('canvas');cv.width=Math.max(1,Math.round(nw*k2));cv.height=Math.max(1,Math.round(nh*k2));
+        const cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);cx.drawImage(o,0,0,cv.width,cv.height);
+        cv.style.cssText='display:block;width:'+Math.round(dw)+'px;height:'+Math.round(dh)+'px;border-radius:6px';cv.className='sn-ic';im.replaceWith(cv)}catch(x){}})}
+     n.style.visibility='visible';n.style.opacity='1';n.style.display=c.classList.contains('ic')?'inline-block':'inline-block';
+     if(!c.classList.contains('ic')){n.style.height='auto';n.style.lineHeight='1.3';n.style.whiteSpace='normal'}
+     dh.appendChild(n)}
+    else{const t=(c.firstChild&&c.firstChild.nodeType===3?c.firstChild.textContent:c.textContent).trim();
+     dh.appendChild(mk('span','sn-v '+(sh.hasAttribute('data-a')?hk:''),snEsc(t)))}});
+   /* v42: además la palabra puesta se escribe como etiqueta junto al casillero (así siempre se ve en la imagen) */
+   if(sh.hasAttribute('data-a')){const ws=cs.filter(c=>!c.classList.contains('ic')&&!c.hasAttribute('data-k')).map(c=>(c.firstChild&&c.firstChild.nodeType===3?c.firstChild.textContent:c.textContent).trim()).filter(Boolean);
+    if(ws.length)dh.insertAdjacentElement('afterend',mk('span','sn-c sn-p '+hk,(hk==='bad'?'✘ ':'✔ ')+'Puso: '+snEsc(ws.join(', '))))}})}
+ /* 3) casilleros de arrastrar: vacíos y correctos visibles */
+ Q('.hole[data-a]').forEach(h=>{if(!h.querySelector('.chip,.sn-v')){h.innerHTML='<span class="sn-ph">sin responder</span>';h.insertAdjacentElement('afterend',mk('span','sn-c sn-p bad','✘ Sin responder'))}
+  if(h.classList.contains('bad'))h.insertAdjacentElement('afterend',mk('span','sn-c','✔ Correcta: '+snEsc(snAlt(h.dataset.a))))});
+ /* v40: en la imagen se guarda SIEMPRE lo que el alumno arrastró y dónde lo dejó (correcto o no) */
+ Q('.chip[data-k]').forEach(c=>{const q=c.closest('.q'),inH=c.parentNode.classList&&c.parentNode.classList.contains('hole'),
+  nmOf=h=>{const b=h&&h.parentNode&&h.parentNode.querySelector(':scope>b');return b?b.textContent.trim():''},
+  hp=inH?c.parentNode:null,put=nmOf(hp)||(hp?'casillero '+(+hp.dataset.k+1):''),
+  hc=q&&q.querySelector('.hole[data-k="'+c.dataset.k+'"]'),nm=nmOf(hc)||'grupo '+(+c.dataset.k+1),
+  bad=c.classList.contains('bad'),isImg=c.classList.contains('ic'),
+  tx=isImg?'':(c.firstChild&&c.firstChild.nodeType===3?c.firstChild.textContent.trim():c.textContent.trim());
+  if(!bad)return;
+  let t;
+  if(!inH)t='✘ Sin ubicar · va en → '+snEsc(nm);
+  else if(bad)t='✘ '+(tx?snEsc(tx)+' · ':'')+'Lo puso en → '+snEsc(put)+' · va en → '+snEsc(nm);
+  else t='✔ '+(tx?snEsc(tx)+' · ':'')+'Lo puso en → '+snEsc(put);
+  c.appendChild(mk('span','sn-cc'+(bad||!inH?'':' g'),t))});
+ /* v44: borde verde (acierto) o rojo (error) con estilo en línea en cada imagen/palabra arrastrada, para que siempre salga en la captura */
+ Q('.chip.ok,.chip.bad').forEach(c=>{const g=c.classList.contains('ok'),col=g?'#16a34a':'#e11d48',ic=c.classList.contains('ic');
+  c.style.setProperty('border','3px solid '+col,'important');c.style.setProperty('border-radius','10px','important');c.style.setProperty('box-sizing','border-box','important');
+  c.style.setProperty('background',ic?'#fff':(g?'#dcfce7':'#ffe4ea'),'important');c.style.setProperty('visibility','visible','important');c.style.setProperty('opacity','1','important')});
+ /* casilleros de imágenes / cajas que quedaron vacíos */
+ Q('.hole[data-k]:not([data-a])').forEach(h=>{if(h.querySelector('.chip,.sn-v'))return;h.innerHTML='<span class="sn-ph">sin responder</span>'});
+ /* 4) ordenar */
+ Q('.od.bad').forEach(r=>r.appendChild(mk('em','sn-c','✔ Va en el paso '+(+r.dataset.k+1))));
+ /* 5) opción múltiple / cliente: tu respuesta y la correcta */
+ Q('.q').forEach(b=>{const i=+String(b.id).replace(/\D/g,''),q=CUR&&CUR.qs[i],bt=[...b.querySelectorAll('.mc')];if(!q||!bt.length)return;let cor;
+  if(q.t==='cli'){const h=b.querySelector('input[type=hidden].gp'),a=h?String(h.dataset.a||'').trim():'';cor=bt.map(x=>x.textContent.replace(/(✔|✘) (Tu respuesta|Respuesta correcta)$/,'').trim()===a)}
+  else{const cs=mcC(q);cor=bt.map(x=>cs.includes(+x.dataset.j))}
+  bt.forEach((x,k)=>{if(x.classList.contains('s'))x.appendChild(mk('em','sn-t '+(cor[k]?'g':'r'),cor[k]?'✔ Tu respuesta':'✘ Tu respuesta'));
+   else if(cor[k]){x.classList.add('sn-miss');x.appendChild(mk('em','sn-t g','✔ Respuesta correcta'))}})});
+ /* 6) verdadero / falso */
+ Q('.vfr[data-v].bad').forEach(r=>r.appendChild(mk('em','sn-c','✔ Correcta: '+(r.dataset.v==='1'?'Verdadero':'Falso'))));
+ /* 7) unir con líneas: se redibujan con las medidas reales y se marca la correcta */
+ const LS=[...src.querySelectorAll('.ln')],LC=Q('.ln'),job=[];
+ LS.forEach((w,wi)=>{const c=LC[wi];if(!c||!w.children[2])return;const lo=[...w.children[1].children],ro=[...w.children[2].children],cL=[...c.children[1].children],cR=[...c.children[2].children],m=w._m||new Map(),links=[];
+  lo.forEach((l,li)=>{const r=m.get(l),ri=r?ro.indexOf(r):-1,want=nz(l.dataset.a),ok=ri>=0&&nz(ro[ri].dataset.a)===want,cri=ok?ri:ro.findIndex(z=>nz(z.dataset.a)===want);links.push({li,ri,cri,ok});
+   const n=cL[li];if(!n)return;n.appendChild(mk('b','sn-b '+(ok?'g':'r'),ok?'✔':'✘'));
+   if(!ok){const t=cri>=0&&!cR[cri].querySelector('img')?cR[cri].textContent.trim():'';n.appendChild(mk('em','sn-c',ri<0?'sin unir'+(t?' · ✔ Correcta: '+snEsc(t):''):(t?'✔ Correcta: '+snEsc(t):'✘ Unión incorrecta')))}});
+  c.insertAdjacentElement('beforebegin',mk('div','sn-leg','<span class="g">Línea verde = acierto</span><span class="r">Línea roja = error</span><span class="d">Línea punteada = respuesta correcta</span>'));
+  job.push({c,links,cL,cR})});
+ /* se dibuja al final, cuando ya no cambia la altura */
+ job.forEach(({c,links,cL,cR})=>{const sv=c.querySelector('svg');if(!sv)return;const b=c.getBoundingClientRect(),W=Math.max(1,b.width),H=Math.max(1,b.height);
+  sv.setAttribute('width',W);sv.setAttribute('height',H);sv.setAttribute('viewBox','0 0 '+W+' '+H);
+  const P=(n,s)=>{const r=n.getBoundingClientRect();return[(s==='r'?r.right:r.left)-b.left,r.top+r.height/2-b.top]};let h='';
+  links.forEach(k=>{if(!k.ok&&k.cri>=0&&cL[k.li]&&cR[k.cri]){const[a,b1]=P(cL[k.li],'r'),[c1,d1]=P(cR[k.cri],'l');h+=`<line x1="${a}" y1="${b1}" x2="${c1}" y2="${d1}" stroke="#16a34a" stroke-width="3" stroke-dasharray="7 6" stroke-linecap="round"/>`}});
+  links.forEach(k=>{if(k.ri>=0&&cL[k.li]&&cR[k.ri]){const[a,b1]=P(cL[k.li],'r'),[c1,d1]=P(cR[k.ri],'l'),col=k.ok?'#16a34a':'#e11d48';h+=`<line x1="${a}" y1="${b1}" x2="${c1}" y2="${d1}" stroke="${col}" stroke-width="4" stroke-linecap="round"/><circle cx="${a}" cy="${b1}" r="4.5" fill="${col}"/><circle cx="${c1}" cy="${d1}" r="4.5" fill="${col}"/>`}});
+  sv.innerHTML=h})}
+async function examCanvas(){
+ await h2cLoad();try{if(document.fonts&&document.fonts.ready)await document.fonts.ready}catch(x){}
+ await new Promise(z=>setTimeout(z,250));
+ const W=Math.max(Math.ceil(A.getBoundingClientRect().width),320),H=Math.max(A.scrollHeight,200),
+  sc=Math.max(1,Math.min(2,Math.sqrt(1.2e7/(W*H*1.35)),15000/(H*1.35)));
+ return html2canvas(A,{scale:sc,useCORS:true,backgroundColor:'#ffffff',logging:false,windowWidth:Math.max(window.innerWidth,320),
+  ignoreElements:n=>n.classList&&(n.classList.contains('er-back')||n.classList.contains('mdl')||n.classList.contains('bar')||n.classList.contains('dlw')||n.id==='tmr'),
+  onclone:async(d,el)=>{try{snFix(A,el,d)}catch(x){console.error(x)}
+   try{await Promise.all([...el.querySelectorAll('img')].map(im=>(im.complete&&im.naturalWidth)?0:new Promise(r=>{im.onload=im.onerror=()=>r();setTimeout(r,3000)})))}catch(x){}}})}
+const snScale=(cv,f)=>{const t=document.createElement('canvas');t.width=Math.max(1,Math.round(cv.width*f));t.height=Math.max(1,Math.round(cv.height*f));const x=t.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,t.width,t.height);x.drawImage(cv,0,0,t.width,t.height);return t};
+async function snapExamen(r){if(!API||M||!r)return;try{let c;try{window.SNSAFE=true;c=await examCanvas();c.toDataURL('image/jpeg',.5)}catch(z0){console.warn('snapExamen: reintento con canvas',z0);window.SNSAFE=false;c=await examCanvas()}
+  if(c.height>15000)c=snScale(c,15000/c.height);
+  let img=c.toDataURL('image/jpeg',.85);for(let n=0;n<4&&img.length>3000000;n++){c=snScale(c,.8);img=c.toDataURL('image/jpeg',.8)}
+  for(let n=0;n<3;n++){try{const x=await post('evalsSnapshot',{id:r.id,alumno:(DB.al.find(z=>z.id===r.al)||{}).n||'',examen:(DB.evals.find(z=>z.id===r.e)||{}).n||'',nota:r.n,img});if(x&&x.ok)return;}catch(z){}await new Promise(z=>setTimeout(z,3000))}}catch(z){console.error(z)}}
 function notasMat(mod){const M=MODN.find(x=>x[0]===mod),cols=notasDe(mod),ev={};DB.evals.forEach(v=>{const c=campoDe(v);if(c.m===mod)ev[v.id]=c.t});const best={},last={};DB.rs.forEach(r=>{if(r.n==null||!ev[r.e])return;const k=r.al+'|'+ev[r.e],t=+r.at||0;if(last[k]==null||t>=last[k]){last[k]=t;best[k]=+r.n}});const pend={};DB.rs.forEach(r=>{if(!(r.pend&&r.n==null)||!ev[r.e])return;const k=r.al+'|'+ev[r.e],t=+r.at||0;if(t>=(last[k]||0)&&(!pend[k]||t>=pend[k].at))pend[k]={id:r.id,at:t}});window.NPEND=pend;return{cols,best,pend}}
 const MODK={'MADERAS':'mad','FERRETERÍA':'fer','SINTÉTICOS':'sin','PROYECTOS / OPT.':'pro','DOCUMENTACIÓN':'doc','FACTURACIÓN':'fac'},
 modCol=m=>{const f=(typeof HDF!=='undefined')&&HDF[MODK[m]];return(f&&f.c)||'#06621c'};
@@ -1858,13 +2005,14 @@ function csv(){const rows=[['Alumno','Código','Área','Grupo','Examen','Mejor n
 function login(){return gate()}
 
 function portal(){const al=DB.al.find(x=>x.id===SID);if(!al){return salir()}
- A.innerHTML=`<div style="max-width:680px;margin:0 auto"><div class="pe" style="display:flex;justify-content:center;margin-bottom:6px">${peAv(al,72)}</div><h1>Hola, ${e(al.n.split(' ')[0])}</h1><p class="lk">${e(al.a)}${al.g?' · '+e(gname(al)):''} · ${e(SEDE)} · <a href="#" onclick="salir();return false">Salir</a></p>${DB.as.filter(a=>tg(a).some(x=>x.id===SID)&&DB.evals.some(v=>v.id===a.e)&&!ovr(a,{id:SID})).map(a=>{const s=stt(a,SID),can=s.s==='p'||s.s==='re'||!!s.ip;return `<div class="rw"><span class="ric">${li('doc',20)}</span><div class="rn"><b>${e(s.v.n)}</b><small>${s.v.qs.length} preguntas${s.c.min?' · '+s.c.min+' min':''}${s.left!=null?' · '+s.left+' intento(s)':''}${a.d?' · vence '+a.d:''}${s.F.length?' · mejor nota '+s.best.toFixed(1)+'/20':''}</small></div><span class="eb ${s.ip?'re':LB[s.s][1]}">${s.ip?'En curso':LB[s.s][0]}</span>${can?`<button class="bt sm" onclick="go('${a.id}')">${s.ip?'Continuar':s.R.length?'Reintentar':'Comenzar'}</button>`:''}</div>`}).join('')||'<p class="lk">No tienes exámenes asignados todavía.</p>'}</div>`}
+ A.innerHTML=`<div style="max-width:680px;margin:0 auto"><div class="pe" style="display:flex;justify-content:center;margin-bottom:6px">${peAv(al,72)}</div><h1>Hola, ${e(al.n.split(' ')[0])}</h1><p class="lk">${e(al.a)}${al.g?' · '+e(gname(al)):''} · ${e(SEDE)} · <a href="#" onclick="salir();return false">Salir</a></p>${DB.as.filter(a=>tg(a).some(x=>x.id===SID)&&DB.evals.some(v=>v.id===a.e)&&!ovr(a,{id:SID})).map(a=>{const s=stt(a,SID),can=canGo(s,a);return `<div class="rw"><span class="ric">${li('doc',20)}</span><div class="rn"><b>${e(s.v.n)}</b><small>${s.v.qs.length} preguntas${s.c.min?' · '+s.c.min+' min':''}${s.left!=null?' · '+s.left+' intento(s)':''}${a.d?' · vence '+a.d:''}${s.F.length?' · mejor nota '+s.best.toFixed(1)+'/20':''}</small></div><span class="eb ${s.ip?'re':(s.s==='ok'&&can?'re':LB[s.s][1])}">${s.ip?'En curso':(s.s==='ok'&&can?'Intento extra':LB[s.s][0])}</span>${can?`<button class="bt sm" onclick="go('${a.id}')">${s.ip?'Continuar':s.R.length?'Reintentar':'Comenzar'}</button>`:''}</div>`}).join('')||'<p class="lk">No tienes exámenes asignados todavía.</p>'}</div>`}
 /* ===== borrador del examen: las respuestas se guardan en este dispositivo y se pueden retomar ===== */
 const DRK='ev_draft_';
 function drGet(id){try{return JSON.parse(localStorage.getItem(DRK+id)||'null')}catch(x){return null}}
 function drPut(id,o){try{localStorage.setItem(DRK+id,JSON.stringify(o))}catch(x){}}
 function drDel(id){try{localStorage.removeItem(DRK+id)}catch(x){}}
 async function go(aid){const a=DB.as.find(x=>x.id===aid),s=stt(a,SID),c=s.c,ip=s.ip;
+ if(ip){const qq=rsqGet()[ip.id];if(qq&&qq.r&&(qq.r.n!=null||qq.r.pend)){toast('Tu examen ya fue finalizado; se está guardando tu nota…');try{rsqFlush()}catch(x){}return}}
  if(!await dlg({t:s.v.n,m:ip?'Tienes este examen empezado. Puedes continuar donde lo dejaste; el tiempo sigue contando desde que lo iniciaste. Aún no tiene nota.':`${s.v.qs.length} preguntas · ${c.min?c.min+' min':'sin límite de tiempo'} · apruebas con ${c.ap}/20. Al comenzar se cuenta un intento.`+(c.ins?' '+c.ins:''),ok:ip?'Continuar':'Comenzar'}))return;
  let r;
  if(ip){r=ip}
@@ -1880,13 +2028,13 @@ function finalizarDlg(){return new Promise(res=>{
  w.onclick=ev=>{const b=ev.target.closest('[data-r]');if(b)end(b.dataset.r==='1');else if(ev.target===w)end(false)};
  document.addEventListener('keydown',k,true);document.body.appendChild(w);w.querySelector('[data-r="0"]').focus()
  })}
-function volverMisExamenes(b){if(b&&b.disabled)return;if(b){b.disabled=true;b.textContent='Regresando a tus exámenes…'}setTimeout(()=>{RUN=null;CUR=null;PLAY=false;render()},1000)}
+function volverMisExamenes(b){if(b&&b.disabled)return;if(b){b.disabled=true;b.textContent='Regresando a tus exámenes…'}setTimeout(()=>{RUN=null;CUR=null;PLAY=false;render();try{PSIG=null;PPN=0;if(typeof portPoll==='function')portPoll()}catch(x){}},1000)}
 let TMC=0;
 function tmr(m){stopT();startGuard();const t0=RUN?RUN.t:Date.now(),end=m?t0+m*60000:0,el=document.createElement('div');el.id='tmr';el.title='Toca para encoger o mostrar el tiempo';el.innerHTML='<svg class="ti" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg><b class="tv"></b>';
  el.onclick=()=>{el.classList.toggle('mn');TMC=el.classList.contains('mn')?1:0};if(TMC)el.classList.add('mn');document.body.appendChild(el);
  const fb=document.createElement('button');fb.id='finb';fb.type='button';fb.title='Finalizar examen';fb.setAttribute('aria-label','Finalizar examen');
  fb.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>';
- fb.onclick=async()=>{const kb=document.querySelector('[data-ck]');if((RUN&&RUN.done)||!kb||kb.disabled)return;if(await finalizarDlg())chk()};document.body.appendChild(fb);pulse(el);pulse(fb);
+ fb.onclick=async()=>{const kb=document.querySelector('[data-ck]');if((RUN&&RUN.done)||!kb||kb.disabled)return;if(await finGo())chk()};document.body.appendChild(fb);pulse(el);pulse(fb);
  const tv=el.querySelector('.tv'),tk=()=>{if(!end){tv.textContent='∞';el.title='Sin límite de tiempo';return}const s=Math.max(0,Math.ceil((end-Date.now())/1000));tv.textContent=(s/60|0)+':'+String(s%60).padStart(2,'0');el.classList.toggle('lo',!!end&&s<60);if(end&&!s){stopT();if(RUN&&!RUN.done){toast('Se acabó el tiempo');chk()}else if(!RUN)toast('Se acabó el tiempo (vista previa)')}};tk();TM=setInterval(tk,500)}
 /* ===== protección contra salida accidental durante el examen ===== */
 let GD=0,GB=0,NOW=0;
@@ -1900,6 +2048,42 @@ function startGuard(){if(GD)return;GD=1;try{history.pushState({ex:1},'')}catch(_
 function endGuard(){if(!GD)return;GD=0;removeEventListener('beforeunload',gOnUnload);removeEventListener('popstate',gOnPop);removeEventListener('keydown',gOnKey,true);document.documentElement.style.overscrollBehaviorY=''}
 function pulse(n){n.addEventListener('pointerdown',()=>{n.classList.add('act');clearTimeout(n._t);n._t=setTimeout(()=>n.classList.remove('act'),2500)})}
 const pl0=play;play=function(v,T){pl0(v,T);if(RUN&&!T){const r=A.querySelector('.bar .bt.w');if(r)r.remove();const b=A.querySelector('[data-ck]');if(b)b.textContent='Finalizar y enviar'}};
+/* v41: al finalizar, si falta responder algo -> ventana de alerta y se lleva al alumno hasta esa pregunta */
+function pendFind(){const out=[];
+ document.querySelectorAll('.box.q:not(.fin)').forEach(b=>{
+  const i=+String(b.id).replace(/\D/g,''),q=(CUR&&CUR.qs&&CUR.qs[i])||{},t=q.t,els=[],
+   vac=x=>!String(x.value==null?'':x.value).trim();
+  if(t==='lib'){const x=b.querySelector('textarea.lib');if(x&&vac(x))els.push(x)}
+  else if(t==='mc'){const m=b.querySelector('.mc');if(m&&!b.querySelector('.mc.s'))els.push(b.querySelector('.mcg')||m)}
+  else if(t==='vf'){b.querySelectorAll('.vfr').forEach(r=>{if(r.dataset.s===undefined)els.push(r)})}
+  else if(t==='lin'||t==='rim'){const w=b.querySelector('.ln'),m=(w&&w._m)||new Map();if(w&&w.children[1])w.children[1].querySelectorAll('.nd').forEach(l=>{if(!m.has(l))els.push(l)})}
+  else if(t==='ord'){}
+  else{
+   if(t==='cla'||t==='par')b.querySelectorAll('.bank .chip').forEach(c=>els.push(c));
+   else b.querySelectorAll('.hole').forEach(h=>{if(!h.querySelector('.chip'))els.push(h)});
+   b.querySelectorAll('input.gp,select.gp,input.cdv').forEach(x=>{if(x.disabled||x.readOnly)return;
+    if(x.type==='hidden'){if(vac(x)){const w=x.closest('.cli-ans')||x.parentNode;if(!els.includes(w))els.push(w)}return}
+    if(vac(x))els.push(x)})}
+  if(els.length)out.push({b,i,els})});
+ return out}
+let PDL=0;
+function pendDlg(P){return new Promise(res=>{
+ if(PDL)return res('go');PDL=1;
+ const n=P.reduce((a,x)=>a+x.els.length,0),qs=P.map(x=>x.i+1),w=document.createElement('div');
+ w.className='mdl';w.setAttribute('role','alertdialog');w.setAttribute('aria-modal','true');
+ w.innerHTML='<div class="mbx exam-final-confirm"><div class="ef-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17.5v.01"/></svg></div><small class="ef-kicker">RESPUESTAS PENDIENTES</small><b>'+(n===1?'Te falta responder 1 casillero':'Te faltan '+n+' respuestas por completar')+'</b><p>'+(qs.length>1?'Están en las preguntas '+qs.join(', ')+'.':'Está en la pregunta '+qs[0]+'.')+' Te llevaremos hasta ahí para que la resuelvas.</p><div class="ef-warning"><span>⚠</span><div>Lo que dejes sin responder contará como incorrecto.</div></div><div class="row"><button type="button" class="bt w" data-r="fin">Finalizar de todos modos</button><button type="button" class="bt" data-r="go">Ir a lo que falta</button></div></div>';
+ const end=v=>{document.removeEventListener('keydown',k,true);w.remove();PDL=0;res(v)},k=ev=>{if(ev.key==='Escape'){ev.stopPropagation();end('go')}};
+ w.onclick=ev=>{const b=ev.target.closest('[data-r]');if(b)end(b.dataset.r);else if(ev.target===w)end('go')};
+ document.addEventListener('keydown',k,true);document.body.appendChild(w);w.querySelector('[data-r="go"]').focus()})}
+function pendGo(P){const f=P[0];if(!f)return;const el=f.els[0];
+ document.querySelectorAll('.pgo,.pgb').forEach(x=>x.classList.remove('pgo','pgb'));
+ f.b.classList.add('pgb');f.els.forEach(x=>x.classList.add('pgo'));
+ try{el.scrollIntoView({behavior:'smooth',block:'center'})}catch(_){el.scrollIntoView()}
+ setTimeout(()=>{if(/^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName)&&el.type!=='hidden')try{el.focus({preventScroll:true})}catch(_){}},450);
+ setTimeout(()=>document.querySelectorAll('.pgo,.pgb').forEach(x=>x.classList.remove('pgo','pgb')),3500)}
+async function chkGo(){const P=pendFind();if(P.length&&await pendDlg(P)==='go'){pendGo(P);return}chk()}
+async function finGo(){const P=pendFind();if(P.length){if(await pendDlg(P)==='go'){pendGo(P);return false}return true}return finalizarDlg()}
+
 const bk0=back;back=async function(){if(RUN&&!RUN.done&&!await dlg({t:'¿Salir del examen?',m:'Podrás volver a entrar y continuar mientras no pulses «Finalizar».',ok:'Salir',danger:1}))return;stopT();RUN=null;bk0()};
 const ck0=chk;chk=function(){ck0();
  const m=CKR?[0,CKR.ok,CKR.tot]:null;if(!m||!RUN||RUN.done)return;RUN.done=1;stopT();drDel(RUN.r.id);
@@ -2156,7 +2340,7 @@ function unite(){if(!FULL)return DB;const own=new Set((FULL.al||[]).filter(a=>a.
  Object.keys(DB).forEach(k=>{if(!KS.includes(k)&&k!=='rs'&&k!=='cp')FULL[k]=DB[k]});
  FULL.cp=cp||[];return FULL}
 async function auth(s,d,k){
- if(API){const r=await post('login',{sede:s,dni:d,clave:k});if(!r||!r.ok)return null;DB=r.db||{folders:[],evals:[]};PSIG=r.sig||'';FULL=null;DBi();return{rol:r.rol,id:r.id,ad:!!r.ad,n:r.n,c:d}}
+ if(API){const r=await post('login',{sede:s,dni:d,clave:k});if(!r||!r.ok)return null;DB=rsqAplicar(r.db||{folders:[],evals:[]},s,d);PSIG=r.sig||'';FULL=null;DBi();return{rol:r.rol,id:r.id,ad:!!r.ad,n:r.n,c:d}}
  DBi();const n=nz(d),c=DB.cp.find(x=>x.s===s&&nz(x.c)===n&&x.k===k);
  if(c)return{rol:'cap',id:c.id,ad:!!c.ad,n:c.n,c:c.c};
  const a=DB.al.find(x=>x.s===s&&nz(x.c)===n&&x.k&&x.k===k);
@@ -2569,6 +2753,16 @@ const ck2=chk;chk=function(){
  if(b&&dlOn()&&!$('dlimg'))b.insertAdjacentHTML('beforeend','<div class="row" style="justify-content:center"><button class="bt" id="dlimg" onclick="dlImg()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Descargar imagen</button></div>')};
 async function dlImg(){const bt=$('dlimg');if(bt)bt.disabled=true;
  try{
+  let c=await examCanvas();if(c.height>16000)c=snScale(c,16000/c.height);
+  let bl=await new Promise(r=>c.toBlob(r,'image/png')),ext='.png';if(!bl){bl=await new Promise(r=>c.toBlob(r,'image/jpeg',.92));ext='.jpg'}if(!bl)throw 0;
+  const nm=String(CUR&&CUR.n||'evaluacion').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_+|_+$/g,''),
+   a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=[nm,$('idd')&&$('idd').value.trim(),$('idf')&&$('idf').value].filter(Boolean).join('_')+ext;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  toast('Imagen descargada ✔')
+ }catch(x){console.error(x);if(bt)bt.disabled=false;return dlImgOld()}
+ if(bt)bt.disabled=false}
+
+async function dlImgOld(){const bt=$('dlimg');if(bt)bt.disabled=true;
+ try{
   const W=Math.ceil(A.getBoundingClientRect().width),cl=A.cloneNode(true),
    src=[...A.querySelectorAll('input,select,textarea')],dst=[...cl.querySelectorAll('input,select,textarea')];
   src.forEach((s,i)=>{const d=dst[i];if(!d)return;
@@ -2799,6 +2993,14 @@ const asgLive=(ev,g)=>DB.as.find(a=>a.t==='l'&&a.live&&!a.cl&&a.e===ev&&a.w===g)
 asgSt=a=>a?(a.go?'En curso':'Asignado · esperando inicio'):'',
 asgAv=(a,s)=>{const u=fotoU(a.f||a.p||PH[dni0(a.c)]);return `<span class="av asgav" data-d="${e(dni0(a.c))}" style="--s:${s}px">${e(peIni(a.n))}${u?fotoImg(u):''}</span>`};
 function asgAct(a){if(!API)return true;return String(a&&a.e||'').trim().toUpperCase()==='ACTIVO'}
+/* v43: varias asignaciones a la vez (una por grupo), pero una MISMA persona (DNI) no puede estar en dos asignaciones abiertas */
+let ASGBZ=null;
+function asgBzBuild(){const m=new Map();if(!ASG)return m;const cur=ASG.g?asgLive(ASG.e,ASG.g):null,byId=new Map(DB.al.map(z=>[z.id,z]));
+ DB.as.forEach(x=>{if(x.t!=='l'||!x.live||x.cl||(cur&&x.id===cur.id))return;(x.l||[]).forEach(i=>{const z=byId.get(i);if(!z)return;const k=dni0(z.c);if(k&&!m.has(k))m.set(k,x)})});return m}
+function asgBz(a){if(!ASG||!a)return null;const cur=ASG.g?asgLive(ASG.e,ASG.g):null;if(cur&&(cur.l||[]).includes(a.id))return null;if(!ASGBZ)ASGBZ=asgBzBuild();return ASGBZ.get(dni0(a.c))||null}
+const asgOk=a=>asgAct(a)&&!asgBz(a);
+function asgBzTag(a){const x=asgBz(a);if(!x)return'';const v=DB.evals.find(z=>z.id===x.e),g=(DB.gr.find(z=>z.id===x.w)||{}).n||'';
+ return `<span class="asgat" style="color:#b45309;font-weight:700" title="Ya está en otra asignación abierta. Termínala para poder asignarle otro examen.">En «${e(v?v.n:'otro examen')}»${g?' · '+e(g):''}</span>`}
 function asgOpen(id){if(!M)return;ASG={e:id,g:null,sel:new Set(),d:'',i:1,q:''};asgDraw()}
 const asgCfg=l=>`<div class="asgcfg"><label>Fecha límite <input type="date" value="${e(ASG.d||'')}" onchange="ASG.d=this.value"></label><label>Intentos <input type="number" min="0" value="${+ASG.i||0}" title="0 = sin límite" onchange="ASG.i=this.value===''?1:Math.max(0,parseInt(this.value)||0)"></label><small>0 intentos = sin límite. Se aplican al pulsar «Asignar».</small></div>`,
 asgIn=(l,a)=>{if(!l||!(l.l||[]).includes(a.id))return'';const s=stt(l,a.id),ex=(l.b||{})[a.id]||0;
@@ -2839,20 +3041,20 @@ async function asgQuitar(id){const a=DB.as.find(x=>x.id===id);if(!a)return;
  if(ASG)asgKeep(asgDraw)}
 function asgClose(){asgItClose();const m=$('asgm');if(m)m.remove();ASG=null}
 function asgBack(){if(!ASG)return;ASG.g=null;ASG.q='';asgDraw()}
-function asgPick(gid){if(!ASG)return;ASG.g=gid;ASG.q='';const l=asgLive(ASG.e,gid),L=DB.al.filter(a=>a.g===gid&&asgAct(a)).map(a=>a.id);
+function asgPick(gid){if(!ASG)return;ASG.g=gid;ASG.q='';ASGBZ=null;const l=asgLive(ASG.e,gid),L=DB.al.filter(a=>a.g===gid&&asgOk(a)).map(a=>a.id);
  ASG.sel=new Set(l?(l.l||[]).filter(i=>L.includes(i)):L);
  ASG.d=l?(l.d||''):'';ASG.i=l?(l.i==null?1:Math.max(0,+l.i||0)):1;asgDraw()}
-function asgDraw(){if(!ASG)return;const v=DB.evals.find(x=>x.id===ASG.e);if(!v)return asgClose();
+function asgDraw(){if(!ASG)return;ASGBZ=null;const v=DB.evals.find(x=>x.id===ASG.e);if(!v)return asgClose();
  let m=$('asgm');if(!m){m=document.createElement('div');m.id='asgm';m.className='mdl';m.onclick=ev=>{if(ev.target===m)asgClose()};document.body.appendChild(m)}
  const g=ASG.g&&DB.gr.find(x=>x.id===ASG.g);if(ASG.g&&!g)ASG.g=null;
  let body,foot='';
- if(!g){body=DB.gr.length?`<p class="lk" style="text-align:left;margin:0 0 12px">Elige el grupo al que quieres asignar este examen.</p><div class="asgg">${DB.gr.map(x=>{const n=DB.al.filter(a=>a.g===x.id).length,l=asgLive(v.id,x.id);
+ if(!g){body=DB.gr.length?`<p class="lk" style="text-align:left;margin:0 0 12px">Elige el grupo al que quieres asignar este examen.</p><div class="asgg">${DB.gr.map(x=>{const n=DB.al.filter(a=>a.g===x.id&&asgAct(a)).length,l=asgLive(v.id,x.id);
    return `<button type="button" class="asgc" onclick="asgPick('${x.id}')"><b>${e(x.n)}</b><small>${n} alumno${n===1?'':'s'}</small>${l?`<span class="asgs${l.go?' on':''}">${asgSt(l)}</span>`:''}</button>`}).join('')}</div>`
    :`<p class="lk">Aún no hay grupos. Créalos en <b>Personal</b> y asigna a cada asesor su grupo.</p>`}
- else{const L=DB.al.filter(a=>a.g===g.id).sort((a,b)=>a.n.localeCompare(b.n,'es')),l=asgLive(v.id,g.id);
+ else{const L=DB.al.filter(a=>a.g===g.id&&asgAct(a)).sort((a,b)=>a.n.localeCompare(b.n,'es')),l=asgLive(v.id,g.id);
   body=`<div class="asgt"><button type="button" class="bt w sm" onclick="asgBack()">← Grupos</button><b>${e(g.n)}</b>${l?`<span class="asgs${l.go?' on':''}">${asgSt(l)}</span>`:''}</div>`
    +(L.length?asgCfg(l)+asgWarn(L):'')
-   +(L.length?`<div class="asgq"><input type="search" id="asgq" placeholder="Buscar alumno por nombre, DNI o área…" value="${e(ASG.q||'')}" oninput="asgFilt(this.value)" autocomplete="off"><small id="asgqn"></small></div><label class="asga"><input type="checkbox" id="asgall" onchange="asgAll(this.checked)"><span>Marcar / desmarcar todos</span><small id="asgn"></small></label><div class="asgl">${L.map(a=>`<div class="asgw" data-q="${e(asgN(a.n+' '+(a.c||'')+' '+(a.a||'')))}"><label class="asgr${asgAct(a)?'':' asgoff'}"${asgAct(a)?'':' title="Solo se puede asignar a asesores con estado ACTIVO"'}><input type="checkbox" data-i="${a.id}" onchange="asgTog('${a.id}',this.checked)"${asgAct(a)?(ASG.sel.has(a.id)?' checked':''):' disabled'}>${asgAv(a,36)}<span class="asgnm"><b>${e(a.n)}</b><small>${e(a.a||'')}${a.c?' · DNI '+e(a.c):''}</small></span>${asgAct(a)?asgPv(a.id)+asgIn(l,a):`<span class="asgat">${e(a.e||'Sin estado')}</span>`}</label></div>`).join('')}</div><p class="lk" id="asgnr" style="display:none">Ningún alumno coincide con la búsqueda.</p>`:`<p class="lk">Este grupo no tiene alumnos.</p>`);
+   +(L.length?`<div class="asgq"><input type="search" id="asgq" placeholder="Buscar alumno por nombre, DNI o área…" value="${e(ASG.q||'')}" oninput="asgFilt(this.value)" autocomplete="off"><small id="asgqn"></small></div><label class="asga"><input type="checkbox" id="asgall" onchange="asgAll(this.checked)"><span>Marcar / desmarcar todos</span><small id="asgn"></small></label><div class="asgl">${L.map(a=>`<div class="asgw" data-q="${e(asgN(a.n+' '+(a.c||'')+' '+(a.a||'')))}"><label class="asgr${asgOk(a)?'':' asgoff'}"${asgAct(a)?(asgBz(a)?' title="Ya tiene otro examen en curso"':''):' title="Solo se puede asignar a asesores con estado ACTIVO"'}><input type="checkbox" data-i="${a.id}" onchange="asgTog('${a.id}',this.checked)"${asgOk(a)?(ASG.sel.has(a.id)?' checked':''):' disabled'}>${asgAv(a,36)}<span class="asgnm"><b>${e(a.n)}</b><small>${e(a.a||'')}${a.c?' · DNI '+e(a.c):''}</small></span>${asgAct(a)?(asgBz(a)?asgBzTag(a):asgPv(a.id)+asgIn(l,a)):`<span class="asgat">${e(a.e||'Sin estado')}</span>`}</label></div>`).join('')}</div><p class="lk" id="asgnr" style="display:none">Ningún alumno coincide con la búsqueda.</p>`:`<p class="lk">Este grupo no tiene alumnos.</p>`);
   foot=L.length?`${l?`<div style="margin-right:auto;display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="bt w dz2" onclick="asgQuitar('${l.id}')">Quitar asignación</button>${l.i?`<button type="button" class="bt w" onclick="asgItOpen()">Dar o quitar intentos</button>`:''}</div>`:''}<button type="button" class="bt" id="asgdo" onclick="asgDo(0)">Asignar</button><button type="button" class="bt go" id="asgstart" onclick="asgDo(1)"${l&&l.go?' disabled':''}>${l&&l.go?'Examen iniciado ✔':'Comenzar examen'}</button>`:''}
  body+=asgOld(v);
  m.innerHTML=`<div class="mbx asgbx"><div class="asgh"><div><b>Asignar examen</b><small>${e(v.n)} · ${v.qs.length} pregunta${v.qs.length===1?'':'s'}</small></div><button type="button" class="x" onclick="asgClose()" aria-label="Cerrar">✕</button></div><div class="asgb">${body}</div>${foot?`<div class="asgf">${foot}</div>`:''}</div>`;
@@ -2872,6 +3074,12 @@ function asgAll(on){if(!ASG)return;document.querySelectorAll('#asgm .asgr input[
 async function asgDo(start){if(!ASG||!ASG.g)return;
  const ids=DB.al.filter(a=>a.g===ASG.g&&asgAct(a)&&ASG.sel.has(a.id)).map(a=>a.id);
  if(!ids.length)return toast('Marca al menos un alumno');
+ ASGBZ=null;
+ {const bz=DB.al.filter(a=>ids.includes(a.id)&&asgBz(a));
+  if(bz.length){bz.forEach(a=>ASG.sel.delete(a.id));
+   const nm=bz.map(a=>{const x=asgBz(a),v=DB.evals.find(z=>z.id===x.e);return a.n+' (en «'+(v?v.n:'otro examen')+'»)'}).slice(0,6).join(', ')+(bz.length>6?' y '+(bz.length-6)+' más':'');
+   await dlg({t:bz.length+' alumno'+(bz.length===1?'':'s')+' ya tiene'+(bz.length===1?'':'n')+' otro examen en curso',m:nm+'. Una persona no puede tener dos exámenes asignados a la vez. Los quité de la selección: termina la otra asignación desde «Asignaciones» o continúa sin ellos.',nc:1,ok:'Entendido'});
+   if(ASG)asgKeep(asgDraw);return}}
  const oc=asgOcultos();
  if(oc>0&&!await dlg({t:'Hay alumnos marcados que no estás viendo',m:'La búsqueda oculta a '+oc+' alumno'+(oc===1?'':'s')+' que siguen marcados. Se '+(start?'comenzará el examen':'asignará')+' a los '+ids.length+' marcados, no solo a los que ves. ¿Continuar?',ok:'Sí, continuar'}))return;
  if(!ASG)return;
@@ -2879,9 +3087,7 @@ async function asgDo(start){if(!ASG||!ASG.g)return;
  if(dup.length){const nm=dup.map(id=>(DB.al.find(x=>x.id===id)||{}).n||'').slice(0,6).join(', ')+(dup.length>6?' y '+(dup.length-6)+' más':'');
   if(!await dlg({t:dup.length+' alumno'+(dup.length===1?'':'s')+' ya tuvo'+(dup.length===1?'':'ieron')+' este examen',m:nm+'. Si sigues, se les asignará otra vez. ¿Continuar?',ok:'Sí, asignar igual'}))return;
   if(!ASG)return}
- const otro=DB.as.find(x=>x.t==='l'&&x.live&&!x.cl&&x.w===ASG.g&&x.e!==ASG.e);
- if(otro){const vo=DB.evals.find(v=>v.id===otro.e);await dlg({t:'Este grupo ya tiene un examen asignado',m:'«'+(vo?vo.n:'otro examen')+'» sigue asignado a este grupo. Ve a «Asignaciones» y márcalo como terminado antes de asignar otro.',nc:1,ok:'Entendido'});return}
- let a=asgLive(ASG.e,ASG.g);
+  let a=asgLive(ASG.e,ASG.g);
  if(start&&!(a&&a.go)&&!await dlg({t:'¿Comenzar el examen?',m:'Los '+ids.length+' alumno'+(ids.length===1?'':'s')+' marcado'+(ids.length===1?'':'s')+' podrán empezar a resolver en cuanto ingresen a su pantalla.',ok:'Sí, comenzar'}))return;
  if(!ASG)return;
  a=asgLive(ASG.e,ASG.g);
@@ -2914,10 +3120,11 @@ function asgvDesc(a){const gn=(DB.gr.find(g=>g.id===a.w)||{}).n||'(eliminado)',T
  return e(w)+' · '+us+'/'+T.length+' ya rindieron'}
 function asgvDraw(){let m=$('asgv');if(!m){m=document.createElement('div');m.id='asgv';m.className='mdl';m.onclick=ev=>{if(ev.target===m)asgvClose()};document.body.appendChild(m)}
  const mp=new Map();DB.as.filter(a=>!a.cl&&DB.evals.some(v=>v.id===a.e)).forEach(a=>{if(!mp.has(a.e))mp.set(a.e,[]);mp.get(a.e).push(a)});
- const body=mp.size?[...mp].map(([id,L])=>{const v=DB.evals.find(x=>x.id===id);return `<div class="box" style="margin:0 0 12px"><b>${e(v.n)}</b>${L.map(a=>`<div class="rw" style="margin-top:8px"><div class="rn"><small>${asgvDesc(a)}</small></div></div>`).join('')}<div class="row" style="justify-content:flex-end;margin-top:10px"><button type="button" class="bt dz2" onclick="asgTerm('${id}')">Marcar examen como terminado</button></div></div>`}).join(''):'<p class="lk">No hay exámenes asignados en este momento.</p>';
+ const body=mp.size?[...mp].map(([id,L])=>{const v=DB.evals.find(x=>x.id===id);return `<div class="box" style="margin:0 0 12px"><b>${e(v.n)}</b>${L.map(a=>`<div class="rw" style="margin-top:8px"><div class="rn"><small>${asgvDesc(a)}</small></div><button type="button" class="bt w sm dz2" onclick="asgTerm('${id}','${a.id}')">Terminar</button></div>`).join('')}${L.length>1?`<div class="row" style="justify-content:flex-end;margin-top:10px"><button type="button" class="bt dz2" onclick="asgTerm('${id}')">Terminar todas</button></div>`:''}</div>`}).join(''):'<p class="lk">No hay exámenes asignados en este momento.</p>';
  m.innerHTML=`<div class="mbx asgbx"><div class="asgh"><div><b>Asignaciones</b><small>Exámenes asignados que siguen abiertos para los alumnos</small></div><button type="button" class="x" onclick="asgvClose()" aria-label="Cerrar">✕</button></div><div class="asgb">${body}</div></div>`;try{aplicarFotos()}catch(x){}}
-async function asgTerm(id){const v=DB.evals.find(x=>x.id===id);if(!v)return;const L=DB.as.filter(a=>a.e===id&&!a.cl);if(!L.length)return;
- if(!await dlg({t:'¿Marcar «'+v.n+'» como terminado?',m:'Se cerrarán '+L.length+' asignación'+(L.length===1?'':'es')+' de este examen. Los alumnos que no lo hayan rendido ya no podrán hacerlo ni lo verán. Los resultados ya enviados se conservan.',ok:'Sí, terminar',danger:1}))return;
+async function asgTerm(id,aid){const v=DB.evals.find(x=>x.id===id);if(!v)return;const L=DB.as.filter(a=>a.e===id&&!a.cl&&(!aid||a.id===aid));if(!L.length)return;
+ const gn=aid?((DB.gr.find(g=>g.id===L[0].w)||{}).n||''):'';
+ if(!await dlg({t:aid&&gn?'¿Terminar «'+v.n+'» para el grupo '+gn+'?':'¿Marcar «'+v.n+'» como terminado?',m:aid?'Solo se cierra la asignación de este grupo; las de otros grupos siguen abiertas. Los alumnos que no lo hayan rendido ya no podrán hacerlo ni lo verán. Los resultados ya enviados se conservan.':'Se cerrarán '+L.length+' asignación'+(L.length===1?'':'es')+' de este examen. Los alumnos que no lo hayan rendido ya no podrán hacerlo ni lo verán. Los resultados ya enviados se conservan.',ok:'Sí, terminar',danger:1}))return;
  const t=Date.now();L.forEach(a=>{a.cl=t});
  const ok=await asgPersist('Terminando el examen…','Estamos cerrando las asignaciones de este examen para todos los alumnos. Puede tardar unos segundos; no cierres esta ventana.');
  if(!ok)L.forEach(a=>{delete a.cl});
@@ -2943,7 +3150,7 @@ function asgpRows(){const q=asgN(AGF.q).trim();
 function asgpTable(){const R=asgpRows();
  if(!R.length)return '<p class="lk">'+(DB.as.length?'Ninguna asignación coincide con los filtros.':'No hay exámenes asignados.')+'</p>';
  return `<div style="overflow-x:auto"><table class="gt"><tr><th>Examen</th><th>Asignado a</th><th>Estado</th><th>Rindieron</th><th>Pendientes</th><th>Vence</th><th></th></tr>${R.map(r=>{const s=ASGST[r.st];
-  return `<tr><td><b>${e(r.v.n)}</b></td><td>${e(r.to)}</td><td><span class="asgs ${s[1]}">${s[0]}</span></td><td>${r.rind}/${r.n}</td><td>${r.pend.length?`<details class="asgpd"><summary>${r.pend.length}</summary><div>${r.pend.map(x=>e(x.n)).join(', ')}</div></details>`:'0'}</td><td>${r.a.d?e(r.a.d):'—'}</td><td style="white-space:nowrap">${r.st==='cl'?'':`${r.a.t==='l'?`<button class="bt w sm" onclick="asgOpen('${r.a.e}');asgPick('${r.a.w}')">Abrir</button> `:''}<button class="bt w sm dz2" onclick="asgTerm('${r.a.e}')">Terminar</button>`}</td></tr>`}).join('')}</table></div>`}
+  return `<tr><td><b>${e(r.v.n)}</b></td><td>${e(r.to)}</td><td><span class="asgs ${s[1]}">${s[0]}</span></td><td>${r.rind}/${r.n}</td><td>${r.pend.length?`<details class="asgpd"><summary>${r.pend.length}</summary><div>${r.pend.map(x=>e(x.n)).join(', ')}</div></details>`:'0'}</td><td>${r.a.d?e(r.a.d):'—'}</td><td style="white-space:nowrap">${r.st==='cl'?'':`${r.a.t==='l'?`<button class="bt w sm" onclick="asgOpen('${r.a.e}');asgPick('${r.a.w}')">Abrir</button> `:''}<button class="bt w sm dz2" onclick="asgTerm('${r.a.e}','${r.a.id}')">Terminar</button>`}</td></tr>`}).join('')}</table></div>`}
 function asgpTb(){const t=$('asgtb');if(t)t.innerHTML=asgpTable()}
 function asgPanel(){const all=DB.as.map(asgInfo).filter(Boolean),ab=all.filter(r=>r.st!=='cl'),pe=ab.filter(r=>r.pend.length).length,
  ex=DB.evals.filter(v=>DB.as.some(a=>a.e===v.id)),fl=!!(AGF.q||AGF.g||AGF.e||AGF.s!=='open');
@@ -2979,19 +3186,26 @@ async function pollDB(){
  if(e1&&e1.ok&&e1.sig&&e1.sig===PSIG)return{same:1};
  const r=await post('login',{sede:SEDE,dni:ME.c,clave:KEY});
  if(!r||!r.ok||!r.db)return null;
- DB=rsMezclar(r.db);PSIG=r.sig||(e1&&e1.sig)||'';FULL=null;DBi();return r}
+ DB=rsqAplicar(rsMezclar(r.db),SEDE,ME&&ME.c);PSIG=r.sig||(e1&&e1.sig)||'';FULL=null;DBi();return r}
 /* v40: el capacitador trae los intentos/notas nuevos SIN salir ni perder lo que está editando (solo reemplaza los resultados) */
 async function capRefresh(){if(!API||!M||!ME)return;toast('Actualizando…');
  try{const r=await post('login',{sede:SEDE,dni:ME.c,clave:KEY});if(!r||!r.ok||!r.db){toast((r&&r.error)||'No se pudo actualizar');return}
   DB.rs=r.db.rs||[];try{DBi()}catch(x){}render();toast('Notas actualizadas ✔')}
  catch(x){toast('Sin conexión: no se pudo actualizar')}}
 let PPT=0,PPX=0;
-const portSig=()=>JSON.stringify(DB.as.filter(a=>tg(a).some(x=>x.id===SID)).map(a=>[a.id,a.live||0,a.go||0,(a.l||[]).length])),
+const portSig=()=>JSON.stringify(DB.as.filter(a=>tg(a).some(x=>x.id===SID)).map(a=>[a.id,a.live||0,a.go||0,(a.l||[]).length,a.i||0,((a.b||{})[SID])||0,a.d||'',(DB.rs||[]).filter(r=>r.al===SID&&r.as===a.id).map(r=>[r.id,r.n==null?0:1,r.pend?1:0])])),
 portStop=()=>{if(PPT){clearInterval(PPT);PPT=0}},
 portStart=()=>{if(!PPT)PPT=setInterval(portPoll,5000)};
+let PPN=0;
+function canGo(s,a){ /* ¿el alumno ve botón para rendir? (también si ya aprobó pero el capacitador le dio un intento extra) */
+ if(!s||!s.v)return false;
+ if(s.s==='p'||s.s==='re'||!!s.ip)return true;
+ const ex=((a&&a.b)||{})[SID]||0;
+ return s.s==='ok'&&ex>0&&s.left!=null&&s.left>0}
 async function portPoll(){
  if(PPX)return;
  if(!ROL||M||RUN||!API||!ME){portStop();return}
+ PPN++;try{if(PPN%6===0&&DB.as.some(a=>tg(a).some(x=>x.id===SID)&&DB.evals.some(v=>v.id===a.e)&&!canGo(stt(a,SID),a)))PSIG=null}catch(x){}
  PPX=1;const antes=portSig();
  try{const r=await pollDB();if(!r)return}
  catch(x){return}
@@ -3037,7 +3251,7 @@ function waitView(a){const al=DB.al.find(x=>x.id===SID),u=fotoU(al.f||al.p||PH[d
  aplicarFotos();waitBar();waitStart()}
 /* barra inferior: «Esperando inicio…» y, cuando el capacitador comienza, el botón para empezar */
 function waitBar(){const b=$('wbar');if(!b||!WA)return;const a=DB.as.find(x=>x.id===WA);if(!a)return;
- const on=a.go?1:0,s=stt(a,SID),can=['p','re'].includes(s.s),k=on+'|'+(can?1:0),first=!b.dataset.k;
+ const on=a.go?1:0,s=stt(a,SID),can=canGo(s,a),k=on+'|'+(can?1:0),first=!b.dataset.k;
  if(b.dataset.k===k)return;b.dataset.k=k;
  const v=DB.evals.find(x=>x.id===a.e),nm=v?`<small class="wsub">${e(v.n)}</small>`:'';
  b.innerHTML=!on?`${nm}<p class="wtx">Esperando inicio<span class="wdt"><i>.</i><i>.</i><i>.</i></span></p>`
@@ -3244,6 +3458,28 @@ addEventListener('beforeunload',ev=>{if(inEd()&&dirty()){ev.preventDefault();ev.
 }catch(x){console.error('v7',x)}})();
 
 
+
+/* v73: en la pantalla de resultado, «Volver» queda bloqueado hasta que la nota esté guardada en el servidor */
+const RSFAIL={};
+(function(){
+ const rb0=rsBanner;
+ rsBanner=function(t,c){rb0(t,c);try{const id=RUN&&RUN.r&&RUN.r.id;if(id){if(/^⚠/.test(t||''))RSFAIL[id]=1;else if(t)delete RSFAIL[id]}}catch(x){}rsUi()};
+ window.rsRetry=function(){try{const id=RUN&&RUN.r&&RUN.r.id,it=id&&rsqGet()[id];if(!it)return rsUi();delete RSFAIL[id];RSTK[id]=0;rsEnviar(it,0);rsUi()}catch(x){console.error(x)}};
+ window.rsUi=function(){try{
+  const bx=document.querySelector('.exam-result .er-back');if(!bx||!RUN||!RUN.r||RUN.nav)return;
+  const b=bx.querySelector('button.bt');if(!b||b.dataset.lock==='x')return;
+  const id=RUN.r.id,pend=!!rsqGet()[id],fail=!!RSFAIL[id]&&!!rsqGet()[id];
+  const st=fail?'fail':(pend&&API&&!M?'busy':'ok');
+  if(bx.dataset.st===st)return;bx.dataset.st=st;
+  let m=bx.previousElementSibling&&bx.previousElementSibling.classList.contains('er-sv')?bx.previousElementSibling:null;
+  if(!m){m=document.createElement('p');m.className='lk er-sv';m.style.cssText='text-align:center;font-weight:700;margin:12px 0 0';bx.parentNode.insertBefore(m,bx)}
+  if(!b.dataset.l)b.dataset.l=b.textContent;
+  if(st==='busy'){b.disabled=true;b.innerHTML='<span class="svsp"></span>Guardando tu nota…';b.onclick=null;m.style.color='#8a6d00';m.textContent='Guardando tu nota… no cierres esta página.'}
+  else if(st==='fail'){b.disabled=false;b.textContent='Reintentar guardado';b.onclick=function(){rsRetry()};m.style.color='#b42318';m.textContent='⚠ No se pudo guardar tu nota. Revisa tu internet y pulsa «Reintentar guardado». No cierres esta página.'}
+  else{b.disabled=false;b.textContent=b.dataset.l;b.onclick=function(){volverMisExamenes(this)};m.style.color='var(--ok,#15803d)';m.textContent=API&&!M?'✔ Nota guardada':''}
+ }catch(x){}};
+ setInterval(rsUi,250);
+})();
 </script><style id="v40-tools-focus">
 @media(min-width:980px){
  .ed{grid-template-columns:310px minmax(0,1fr);gap:18px;align-items:start}
@@ -4192,7 +4428,10 @@ body:not(.vmc-off) .wait{min-height:calc(100vh - 102px)}
 </style>
 <script>
 const VMC_URL="https://capacitacion3vesmartin-ves.github.io/capacitaciondeingreso/";
-function vmcSync(){try{document.body.classList.toggle('vmc-off',!!exAct())}catch(x){}}
+function vmcHome(){try{return !exAct()&&!WA&&!CUR&&(!ROL&&!GATE.s)}catch(x){return false}}
+function vmcSync(){try{document.body.classList.toggle('vmc-off',!vmcHome())}catch(x){}}
+function volverIni(){try{if(ROL){if(VW==='ev'&&F!=='all'){const c=DB.folders.find(f=>f.id===F);F=c&&c.p&&DB.folders.some(f=>f.id===c.p)?c.p:'all';QS=''}else if(VW!=='ev'){VW='ev'}else{salir();return}}else{GATE.s=''}render()}catch(x){}}
+(function(){const l0=lib;lib=function(){const r=l0.apply(this,arguments);try{bn();vmcSync()}catch(x){}return r}})();
 (function(){const b0=bn;bn=function(){const r=b0.apply(this,arguments);vmcSync();return r}})();
 setInterval(vmcSync,250);vmcSync();
 async function vmcGo(ev){ev.preventDefault();try{if(exAct())return;if(typeof inEd==='function'&&inEd()&&!(await salida()))return}catch(x){}
