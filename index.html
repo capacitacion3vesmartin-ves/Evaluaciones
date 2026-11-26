@@ -134,6 +134,20 @@ body.dg .dz{border-color:var(--c);background:#f0fdf4;color:var(--c)}.mk{position
 #tmr{position:fixed;left:10px;bottom:76px;z-index:60;opacity:.3;transition:opacity .2s;display:flex;align-items:center;gap:6px;background:#16335f;color:#fff;border-radius:22px;padding:6px 14px 6px 10px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.28);user-select:none;-webkit-user-select:none}#tmr.lo{background:var(--no)}
 #tmr.mn{padding:0;width:40px;height:40px;justify-content:center;border-radius:50%}#tmr.mn .tv{display:none}
 #finb{position:fixed;left:10px;bottom:24px;z-index:60;opacity:.3;transition:opacity .2s;width:40px;height:40px;border-radius:50%;border:2px solid #16335f;background:#fff;color:#16335f;display:grid;place-items:center;cursor:pointer;padding:0;box-shadow:0 4px 12px rgba(0,0,0,.28)}#finb:hover{background:#16335f;color:#fff}
+/* v47: cronómetro rojo cuando faltan menos de 5 min + ficha de asignación + tiempo en vivo */
+#tmr.lo{background:#d62828!important;opacity:.92}
+#tmr.lo2{animation:tmrp 1s ease-in-out infinite}
+@keyframes tmrp{50%{transform:scale(1.07)}}
+.asgin{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;border:2px solid var(--bd);border-radius:12px;padding:10px 12px;background:#f6f9ff;margin-bottom:12px;text-align:left}
+.asgin small{display:block;font-size:11px;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.asgin b{font-size:14px;line-height:1.25}.asgin .w{color:#b45309}
+.tmrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:2px solid var(--bd);border-radius:12px;padding:8px 10px;background:#fff;margin-bottom:8px}
+.tmrow .asgnm{flex:1 1 180px;min-width:0}
+.tmrow .tmb{display:flex;gap:6px;flex-wrap:wrap}
+.tmrow .tmb .bt{min-width:48px;padding:7px 10px;font-size:14px}
+.tmq{font-weight:800;font-variant-numeric:tabular-nums}.tmq.r{color:#d62828}
+.tmall{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:2px dashed var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:12px;background:#f6f9ff}
+.tmall>b{margin-right:auto}
 #tmr:active,#tmr.act,#tmr:focus-visible,#finb:active,#finb.act,#finb:focus-visible{opacity:1}
 @media (hover:hover){#tmr:hover,#finb:hover{opacity:1}}
 @media (max-width:700px){#tmr{left:6px;bottom:70px}#finb{left:6px;bottom:20px}}
@@ -1589,7 +1603,7 @@ AR=()=>DB.ar.length?DB.ar:['General'],
 gcfg=v=>Object.assign({min:0,int:0,ap:13,mz:0,dl:0,ins:'',ar:''},v.cf||{},{int:0}),
 tg=a=>DB.al.filter(x=>a.t==='a'?(a.w==='*'||x.a===a.w):a.t==='g'?x.g===a.w:a.t==='l'?(a.l||[]).includes(x.id):x.id===a.w),
 LB={ok:['Aprobado','ok'],no:['Desaprobado','no'],late:['No rindió','no'],re:['Reintentar','re'],p:['Pendiente','p']},
-sv=()=>{save(1);render()},stopT=()=>{clearInterval(TM);endGuard();const t=$('tmr');if(t)t.remove();const f=$('finb');if(f)f.remove()};
+sv=()=>{save(1);render()},stopT=()=>{clearInterval(TM);clearInterval(TMP);TMP=0;endGuard();const t=$('tmr');if(t)t.remove();const f=$('finb');if(f)f.remove()};
 function stt(a,sid){const v=DB.evals.find(v=>v.id===a.e);if(!v)return{};const c=Object.assign({},gcfg(v),{int:+a.i||0}),R=DB.rs.filter(r=>r.al===sid&&r.as===a.id),F=R.filter(r=>r.n!=null),best=Math.max(0,...F.map(r=>r.n)),late=a.d&&Date.now()>new Date(a.d+'T23:59:59'),left=c.int?Math.max(0,c.int+((a.b||{})[sid]||0)-R.length):null;
  return{v,c,R,F,best,late,left,ip:R.filter(r=>r.n==null&&!r.pend).sort((a,b)=>(+b.at||0)-(+a.at||0))[0]||null,s:F.length&&best>=c.ap?'ok':(left===0||late)?(R.length?'no':'late'):R.length?'re':'p'}}
 /* configuración por examen + retroalimentación por pregunta */
@@ -2030,12 +2044,20 @@ function finalizarDlg(){return new Promise(res=>{
  })}
 function volverMisExamenes(b){if(b&&b.disabled)return;if(b){b.disabled=true;b.textContent='Regresando a tus exámenes…'}setTimeout(()=>{RUN=null;CUR=null;PLAY=false;render();try{PSIG=null;PPN=0;if(typeof portPoll==='function')portPoll()}catch(x){}},1000)}
 let TMC=0;
-function tmr(m){stopT();startGuard();const t0=RUN?RUN.t:Date.now(),end=m?t0+m*60000:0,el=document.createElement('div');el.id='tmr';el.title='Toca para encoger o mostrar el tiempo';el.innerHTML='<svg class="ti" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg><b class="tv"></b>';
+var TMP=0,TSIG=null,TPX=0;
+/* v47: mientras rinde, el alumno revisa cada 8 s si el capacitador le agregó tiempo (solo descarga si cambió la firma) */
+function tmPoll(){clearInterval(TMP);TMP=0;if(!RUN||M||!API)return;TSIG=PSIG;
+ TMP=setInterval(async()=>{if(!RUN||RUN.done||M||!API||TPX)return;TPX=1;
+  try{const e1=await post('evalsEstado',{});if(!e1||!e1.ok||!e1.sig||e1.sig===TSIG)return;
+   const r=await post('login',{sede:SEDE,dni:ME.c,clave:KEY});if(!r||!r.ok||!r.db)return;
+   (r.db.as||[]).forEach(n=>{const l=DB.as.find(z=>z.id===n.id);if(!l)return;if(n.x)l.x=n.x;else delete l.x});TSIG=e1.sig}
+  catch(x){}finally{TPX=0}},8000)}
+function tmr(m){stopT();startGuard();let pe=0;const t0=RUN?RUN.t:Date.now(),endF=()=>{if(!m)return 0;const a=RUN?DB.as.find(z=>z.id===RUN.a):null,x=(a&&a.x)||{};return t0+(m+(+x['*']||0)+(+x[SID]||0))*60000},el=document.createElement('div');el.id='tmr';el.title='Toca para encoger o mostrar el tiempo';el.innerHTML='<svg class="ti" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg><b class="tv"></b>';
  el.onclick=()=>{el.classList.toggle('mn');TMC=el.classList.contains('mn')?1:0};if(TMC)el.classList.add('mn');document.body.appendChild(el);
  const fb=document.createElement('button');fb.id='finb';fb.type='button';fb.title='Finalizar examen';fb.setAttribute('aria-label','Finalizar examen');
  fb.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>';
  fb.onclick=async()=>{const kb=document.querySelector('[data-ck]');if((RUN&&RUN.done)||!kb||kb.disabled)return;if(await finGo())chk()};document.body.appendChild(fb);pulse(el);pulse(fb);
- const tv=el.querySelector('.tv'),tk=()=>{if(!end){tv.textContent='∞';el.title='Sin límite de tiempo';return}const s=Math.max(0,Math.ceil((end-Date.now())/1000));tv.textContent=(s/60|0)+':'+String(s%60).padStart(2,'0');el.classList.toggle('lo',!!end&&s<60);if(end&&!s){stopT();if(RUN&&!RUN.done){toast('Se acabó el tiempo');chk()}else if(!RUN)toast('Se acabó el tiempo (vista previa)')}};tk();TM=setInterval(tk,500)}
+ const tv=el.querySelector('.tv'),tk=()=>{const end=endF();if(pe&&end>pe+500)toast('Tu capacitador te agregó '+Math.round((end-pe)/60000)+' min más ⏱');pe=end;if(!end){tv.textContent='∞';el.title='Sin límite de tiempo';return}const s=Math.max(0,Math.ceil((end-Date.now())/1000));tv.textContent=(s/60|0)+':'+String(s%60).padStart(2,'0');el.classList.toggle('lo',!!end&&s<300);el.classList.toggle('lo2',!!end&&s<60);if(end&&!s){stopT();if(RUN&&!RUN.done){toast('Se acabó el tiempo');chk()}else if(!RUN)toast('Se acabó el tiempo (vista previa)')}};tk();TM=setInterval(tk,500);tmPoll()}
 /* ===== protección contra salida accidental durante el examen ===== */
 let GD=0,GB=0,NOW=0;
 const exAct=()=>!!(RUN&&!RUN.done);
@@ -3001,6 +3023,9 @@ function asgBz(a){if(!ASG||!a)return null;const cur=ASG.g?asgLive(ASG.e,ASG.g):n
 const asgOk=a=>asgAct(a)&&!asgBz(a);
 function asgBzTag(a){const x=asgBz(a);if(!x)return'';const v=DB.evals.find(z=>z.id===x.e),g=(DB.gr.find(z=>z.id===x.w)||{}).n||'';
  return `<span class="asgat" style="color:#b45309;font-weight:700" title="Ya está en otra asignación abierta. Termínala para poder asignarle otro examen.">En «${e(v?v.n:'otro examen')}»${g?' · '+e(g):''}</span>`}
+function asgInfoBox(v){const c=gcfg(v),k=campoDe(v),tm=(DB.malla||[]).find(z=>z.id===v.tema),
+ tema=tm?(tm.tema+(tm.dia?' ('+tm.dia+')':'')):(k.m||''),nota=k.m&&k.t?k.m+' · '+k.t:'',t=+c.min?c.min+' min':'Sin límite de tiempo';
+ return `<div class="asgin"><div><small>Temática</small><b${tema?'':' class="w"'}>${tema?e(tema):'Sin temática'}</b></div><div><small>Nota que se registra</small><b${nota?'':' class="w"'}>${nota?e(nota):'No se registra en la malla'}</b></div><div><small>Tiempo</small><b>${e(t)}</b></div><div><small>Aprueba con</small><b>${+c.ap||13}/20</b></div></div>`}
 function asgOpen(id){if(!M)return;ASG={e:id,g:null,sel:new Set(),d:'',i:1,q:''};asgDraw()}
 const asgCfg=l=>`<div class="asgcfg"><label>Fecha límite <input type="date" value="${e(ASG.d||'')}" onchange="ASG.d=this.value"></label><label>Intentos <input type="number" min="0" value="${+ASG.i||0}" title="0 = sin límite" onchange="ASG.i=this.value===''?1:Math.max(0,parseInt(this.value)||0)"></label><small>0 intentos = sin límite. Se aplican al pulsar «Asignar».</small></div>`,
 asgIn=(l,a)=>{if(!l||!(l.l||[]).includes(a.id))return'';const s=stt(l,a.id),ex=(l.b||{})[a.id]||0;
@@ -3055,8 +3080,8 @@ function asgDraw(){if(!ASG)return;ASGBZ=null;const v=DB.evals.find(x=>x.id===ASG
   body=`<div class="asgt"><button type="button" class="bt w sm" onclick="asgBack()">← Grupos</button><b>${e(g.n)}</b>${l?`<span class="asgs${l.go?' on':''}">${asgSt(l)}</span>`:''}</div>`
    +(L.length?asgCfg(l)+asgWarn(L):'')
    +(L.length?`<div class="asgq"><input type="search" id="asgq" placeholder="Buscar alumno por nombre, DNI o área…" value="${e(ASG.q||'')}" oninput="asgFilt(this.value)" autocomplete="off"><small id="asgqn"></small></div><label class="asga"><input type="checkbox" id="asgall" onchange="asgAll(this.checked)"><span>Marcar / desmarcar todos</span><small id="asgn"></small></label><div class="asgl">${L.map(a=>`<div class="asgw" data-q="${e(asgN(a.n+' '+(a.c||'')+' '+(a.a||'')))}"><label class="asgr${asgOk(a)?'':' asgoff'}"${asgAct(a)?(asgBz(a)?' title="Ya tiene otro examen en curso"':''):' title="Solo se puede asignar a asesores con estado ACTIVO"'}><input type="checkbox" data-i="${a.id}" onchange="asgTog('${a.id}',this.checked)"${asgOk(a)?(ASG.sel.has(a.id)?' checked':''):' disabled'}>${asgAv(a,36)}<span class="asgnm"><b>${e(a.n)}</b><small>${e(a.a||'')}${a.c?' · DNI '+e(a.c):''}</small></span>${asgAct(a)?(asgBz(a)?asgBzTag(a):asgPv(a.id)+asgIn(l,a)):`<span class="asgat">${e(a.e||'Sin estado')}</span>`}</label></div>`).join('')}</div><p class="lk" id="asgnr" style="display:none">Ningún alumno coincide con la búsqueda.</p>`:`<p class="lk">Este grupo no tiene alumnos.</p>`);
-  foot=L.length?`${l?`<div style="margin-right:auto;display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="bt w dz2" onclick="asgQuitar('${l.id}')">Quitar asignación</button>${l.i?`<button type="button" class="bt w" onclick="asgItOpen()">Dar o quitar intentos</button>`:''}</div>`:''}<button type="button" class="bt" id="asgdo" onclick="asgDo(0)">Asignar</button><button type="button" class="bt go" id="asgstart" onclick="asgDo(1)"${l&&l.go?' disabled':''}>${l&&l.go?'Examen iniciado ✔':'Comenzar examen'}</button>`:''}
- body+=asgOld(v);
+  foot=L.length?`${l?`<div style="margin-right:auto;display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="bt w dz2" onclick="asgQuitar('${l.id}')">Quitar asignación</button>${l.i?`<button type="button" class="bt w" onclick="asgItOpen()">Dar o quitar intentos</button>`:''}${l.go&&+gcfg(v).min?`<button type="button" class="bt w" onclick="tmOpen('${l.id}')">⏱ Agregar tiempo</button>`:''}</div>`:''}<button type="button" class="bt" id="asgdo" onclick="asgDo(0)">Asignar</button><button type="button" class="bt go" id="asgstart" onclick="asgDo(1)"${l&&l.go?' disabled':''}>${l&&l.go?'Examen iniciado ✔':'Comenzar examen'}</button>`:''}
+ body=asgInfoBox(v)+body+asgOld(v);
  m.innerHTML=`<div class="mbx asgbx"><div class="asgh"><div><b>Asignar examen</b><small>${e(v.n)} · ${v.qs.length} pregunta${v.qs.length===1?'':'s'}</small></div><button type="button" class="x" onclick="asgClose()" aria-label="Cerrar">✕</button></div><div class="asgb">${body}</div>${foot?`<div class="asgf">${foot}</div>`:''}</div>`;
  asgFilt();aplicarFotos()}
 function asgSync(){if(!ASG||!ASG.g)return;const all=[...document.querySelectorAll('#asgm .asgr input[data-i]:not(:disabled)')],vis=all.filter(b=>{const w=b.closest('.asgw');return !w||w.style.display!=='none'}),n=all.filter(b=>b.checked).length,nv=vis.filter(b=>b.checked).length,al=$('asgall'),tx=$('asgn');
@@ -3112,6 +3137,37 @@ async function asgPersist(t,s){
  catch(x){busyOff();toast('Sin conexión: no se pudo guardar');return false}
  finally{busyOff()}}
 
+/* ===== v47: agregar tiempo EN VIVO a alumnos que ya están rindiendo =====
+ * El tiempo extra se guarda en la asignación: a.x = { idAlumno: minutosExtra }  (y a.x['*'] = extra para todos).
+ * El alumno lo recibe solo: su cronómetro consulta cada 8 s y suma los minutos sin perder sus respuestas. */
+var TMA=null,TMI=0,TMN=0;
+const tmFmt=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return (s/60|0)+':'+String(s%60).padStart(2,'0')};
+function tmEnd(a,r,sid){const v=DB.evals.find(z=>z.id===a.e),c=v?gcfg(v):{min:0};if(!+c.min)return 0;const x=a.x||{};return (+r.at||0)+(+c.min+(+x['*']||0)+(+x[sid]||0))*60000}
+async function tmLoad(q){if(!API)return;try{const r=await post('login',{sede:SEDE,dni:ME.c,clave:KEY});if(r&&r.ok&&r.db){DB.rs=r.db.rs||[];try{DBi()}catch(x){}}}catch(x){if(!q)toast('Sin conexión')}if(TMA)tmDraw()}
+async function tmOpen(aid){if(!M)return;if(!DB.as.find(x=>x.id===aid))return;TMA=aid;TMN=0;tmDraw();clearInterval(TMI);
+ TMI=setInterval(()=>{TMN++;const nw=Date.now();document.querySelectorAll('#asgtm [data-tm]').forEach(n=>{const ms=+n.dataset.tm-nw;n.textContent=ms>0?tmFmt(ms):'0:00';n.classList.toggle('r',ms<300000)});if(TMN%15===0)tmLoad(true)},1000);
+ await tmLoad(true)}
+function tmClose(){clearInterval(TMI);TMI=0;TMA=null;const m=$('asgtm');if(m)m.remove()}
+function tmDraw(){const a=DB.as.find(x=>x.id===TMA);if(!a)return tmClose();const v=DB.evals.find(z=>z.id===a.e);if(!v)return tmClose();
+ const c=gcfg(v),base=+c.min||0,gn=(DB.gr.find(g=>g.id===a.w)||{}).n||'';
+ let m=$('asgtm');if(!m){m=document.createElement('div');m.id='asgtm';m.className='mdl';m.onclick=ev=>{if(ev.target===m)tmClose()};document.body.appendChild(m)}
+ const y=(m.querySelector('.asgb')||{}).scrollTop||0,L=tg(a).slice().sort((p,q)=>p.n.localeCompare(q.n,'es')),x=a.x||{};
+ const btn=(ids,key)=>[1,2,5,10].map(d=>`<button type="button" class="bt sm" onclick="tmAdd(${key},${d})">+${d}</button>`).join('');
+ const info=L.map(al=>({al,s:stt(a,al.id)})),run=info.filter(z=>z.s.ip);
+ const rows=info.map(({al,s})=>{const ex=+x[al.id]||0,fin=!s.ip&&s.R.length>0&&!(s.left>0&&false);
+  const st=s.ip?(()=>{const en=tmEnd(a,s.ip,al.id),ms=en-Date.now();return `Rindiendo · le quedan <span class="tmq${ms<300000?' r':''}" data-tm="${en}">${ms>0?tmFmt(ms):'0:00'}</span>`})():(s.R.length?'Ya terminó':'Aún no empieza');
+  return `<div class="tmrow">${asgAv(al,34)}<span class="asgnm"><b>${e(al.n)}</b><small>${st}${ex?' · +'+ex+' min dados':''}</small></span>${fin?'':`<div class="tmb">${btn([al.id],"'"+al.id+"'")}</div>`}</div>`}).join('');
+ const body=!base?'<p class="lk">Este examen no tiene límite de tiempo, así que no hay nada que ampliar.</p>'
+  :`<p class="lk" style="text-align:left;margin:0 0 12px">Tiempo del examen: <b>${base} min</b>. Los minutos que agregues se suman al cronómetro del alumno aunque ya esté resolviendo (tarda unos segundos en llegarle).</p>`
+   +`<div class="tmall"><b>${run.length?'A todos los que están rindiendo ('+run.length+')':'Nadie está rindiendo ahora'}</b>${run.length?btn(null,"'*r'"):''}</div>`+(rows||'<p class="lk">No hay alumnos en esta asignación.</p>');
+ m.innerHTML=`<div class="mbx asgbx"><div class="asgh"><div><b>Agregar tiempo en vivo</b><small>${e(v.n)}${gn?' · '+e(gn):''}</small></div><button type="button" class="x" onclick="tmClose()" aria-label="Cerrar">✕</button></div><div class="asgb">${body}</div><div class="asgf"><small class="mu" style="margin-right:auto">Si el cronómetro del alumno ya llegó a 0:00, el examen ya se envió y no se puede ampliar.</small><button type="button" class="bt w" onclick="tmLoad()">Actualizar</button></div></div>`;
+ const b=m.querySelector('.asgb');if(b)b.scrollTop=y;try{aplicarFotos()}catch(z){}}
+async function tmAdd(who,d){const a=DB.as.find(x=>x.id===TMA);if(!a)return;
+ let ids=[who];if(who==='*r')ids=tg(a).filter(al=>stt(a,al.id).ip).map(al=>al.id);if(!ids.length)return toast('Nadie está rindiendo ahora');
+ const prev=a.x?JSON.parse(JSON.stringify(a.x)):null;a.x=Object.assign({},a.x);ids.forEach(id=>{a.x[id]=(+a.x[id]||0)+d});
+ const ok=await asgPersist('Agregando tiempo…','Estamos guardando el tiempo extra. Los alumnos lo verán en unos segundos.');
+ if(!ok){if(prev)a.x=prev;else delete a.x}else toast('+'+d+' min '+(ids.length>1?'a '+ids.length+' alumnos ':'')+'✔');
+ if(TMA)tmDraw()}
 /* v40: menú «Asignaciones» + «Marcar examen como terminado» */
 function asgvOpen(){if(!M)return;asgvDraw()}
 function asgvClose(){const m=$('asgv');if(m)m.remove()}
@@ -3150,7 +3206,7 @@ function asgpRows(){const q=asgN(AGF.q).trim();
 function asgpTable(){const R=asgpRows();
  if(!R.length)return '<p class="lk">'+(DB.as.length?'Ninguna asignación coincide con los filtros.':'No hay exámenes asignados.')+'</p>';
  return `<div style="overflow-x:auto"><table class="gt"><tr><th>Examen</th><th>Asignado a</th><th>Estado</th><th>Rindieron</th><th>Pendientes</th><th>Vence</th><th></th></tr>${R.map(r=>{const s=ASGST[r.st];
-  return `<tr><td><b>${e(r.v.n)}</b></td><td>${e(r.to)}</td><td><span class="asgs ${s[1]}">${s[0]}</span></td><td>${r.rind}/${r.n}</td><td>${r.pend.length?`<details class="asgpd"><summary>${r.pend.length}</summary><div>${r.pend.map(x=>e(x.n)).join(', ')}</div></details>`:'0'}</td><td>${r.a.d?e(r.a.d):'—'}</td><td style="white-space:nowrap">${r.st==='cl'?'':`${r.a.t==='l'?`<button class="bt w sm" onclick="asgOpen('${r.a.e}');asgPick('${r.a.w}')">Abrir</button> `:''}<button class="bt w sm dz2" onclick="asgTerm('${r.a.e}','${r.a.id}')">Terminar</button>`}</td></tr>`}).join('')}</table></div>`}
+  return `<tr><td><b>${e(r.v.n)}</b></td><td>${e(r.to)}</td><td><span class="asgs ${s[1]}">${s[0]}</span></td><td>${r.rind}/${r.n}</td><td>${r.pend.length?`<details class="asgpd"><summary>${r.pend.length}</summary><div>${r.pend.map(x=>e(x.n)).join(', ')}</div></details>`:'0'}</td><td>${r.a.d?e(r.a.d):'—'}</td><td style="white-space:nowrap">${r.st==='cl'?'':`${r.a.t==='l'?`<button class="bt w sm" onclick="asgOpen('${r.a.e}');asgPick('${r.a.w}')">Abrir</button> `:''}${r.a.t==='l'&&r.a.go&&+gcfg(r.v).min?`<button class="bt w sm" onclick="tmOpen('${r.a.id}')">⏱ Tiempo</button> `:''}<button class="bt w sm dz2" onclick="asgTerm('${r.a.e}','${r.a.id}')">Terminar</button>`}</td></tr>`}).join('')}</table></div>`}
 function asgpTb(){const t=$('asgtb');if(t)t.innerHTML=asgpTable()}
 function asgPanel(){const all=DB.as.map(asgInfo).filter(Boolean),ab=all.filter(r=>r.st!=='cl'),pe=ab.filter(r=>r.pend.length).length,
  ex=DB.evals.filter(v=>DB.as.some(a=>a.e===v.id)),fl=!!(AGF.q||AGF.g||AGF.e||AGF.s!=='open');
@@ -4654,6 +4710,115 @@ window.linBox=function(q,i){
   +'<div class="row"><button type="button" class="bt w" onclick="Q('+i+').it.push({tx:\'\',r:\'\'});edit(CUR)">+ Pareja</button></div>'
   +'<small class="hint">Cada lado puede ser texto o una imagen (toca 🖼). Puedes mezclar: imagen ↔ texto, texto ↔ imagen o texto ↔ texto.</small></div>'};
 const qh_l=qh;qh=function(q,i){return q&&q.t==='lin'?linBox(q,i):qh_l.apply(this,arguments)};
+})();
+</script>
+<style id="fin3-css">
+/* ===== v80: ventana «Finalizar edición» más didáctica y más ancha ===== */
+.mbx.cfm.fin2{width:min(900px,100%)}
+.mbx.cfm.fin2 .cfs{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;padding:18px 20px;background:#f8fbf9}
+.mbx.cfm.fin2 .cfs>.cfg{display:contents}
+.fin2 .fs3{background:#fff;border:1px solid #d9e5dc;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(19,48,42,.05);min-width:0}
+.fin2 .fs3>header{display:flex;align-items:center;gap:10px}
+.fin2 .fs3>header i{flex:none;width:30px;height:30px;border-radius:50%;background:var(--c);color:#fff;font:800 15px/30px system-ui,sans-serif;text-align:center;font-style:normal}
+.fin2 .fs3>header b{display:block;font-size:16px;font-weight:800;line-height:1.2}
+.fin2 .fs3>header small{display:block;font-size:12.5px;color:var(--mu);font-weight:500;margin-top:1px}
+.fin2 .fb3{display:flex;flex-direction:column;gap:12px}
+.fin2 .fb3 .cf3{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:none;border:0;padding:0}
+.fin2 .fb3 .cf3.nt3{grid-template-columns:1fr}
+.fin2 .fb3 .cf3>label.cf.lvl{grid-column:1/-1}
+.fin2 .fb3 .cf>span{font-size:13px;font-weight:700;color:#2f453c;text-transform:none;letter-spacing:0;margin-bottom:5px;white-space:normal}
+.fin2 .fb3 select,.fin2 .fb3 input:not([type=checkbox]),.fin2 .fb3 textarea{font-size:15px}
+.fin2 #tbname{font-size:17px;font-weight:700}
+.fin2 #tbname:placeholder-shown{border-color:#f59e0b;background:#fffdf5}
+.fin2 .fld3 input[type=number]{font-size:20px;font-weight:800;text-align:center}
+.fin2 .chs3{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.fin2 .chs3 button{border:1.5px solid #cfdcd2;background:#fff;color:#2f453c;border-radius:999px;padding:5px 11px;font:700 13px system-ui,sans-serif;cursor:pointer;transition:background .12s,color .12s,border-color .12s}
+.fin2 .chs3 button:hover{border-color:var(--c)}
+.fin2 .chs3 button.on{background:var(--c);border-color:var(--c);color:#fff}
+.fin2 .cf3h{font-size:12.5px;line-height:1.35;padding:8px 10px;border-radius:10px;background:#eef6f0;color:#35604a;margin:0}
+.fin2 .cf3h.warn{background:#fff7e0;color:#92400e}
+.fin2 .fb3 .cf.ck{padding:10px 12px;gap:12px;border-radius:12px}
+.fin2 .sw3 b{display:block;font-size:14px;font-weight:700;line-height:1.25}
+.fin2 .sw3 small{display:block;font-size:12px;font-weight:500;color:var(--mu);margin-top:1px}
+.fin2 .cf.ck:has(input:disabled){opacity:.55;cursor:not-allowed}
+.fin2 .cf.ck:has(input:disabled) input{cursor:not-allowed}
+@media(max-width:760px){.mbx.cfm.fin2 .cfs{grid-template-columns:1fr;padding:14px}}
+@media(max-width:420px){.fin2 .fb3 .cf3{grid-template-columns:1fr}}
+</style>
+<script id="fin3-finalizar-didactico">
+(function(){
+'use strict';
+const ob=window.tbOpenCfg;
+if(typeof ob!=='function')return;
+const $$=(r,s)=>[...r.querySelectorAll(s)];
+const mk=h=>{const d=document.createElement('div');d.innerHTML=h;return d.firstElementChild};
+const hdr=(n,t,s)=>'<header><i>'+n+'</i><div><b>'+t+'</b>'+(s?'<small>'+s+'</small>':'')+'</div></header>';
+const step=(n,t,s)=>mk('<section class="fs3">'+hdr(n,t,s)+'<div class="fb3"></div></section>');
+function chips(inp,vals){
+ const w=mk('<div class="chs3"></div>');
+ const paint=()=>$$(w,'button').forEach(b=>b.classList.toggle('on',String(+inp.value||0)===b.dataset.v));
+ vals.forEach(([v,l])=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.dataset.v=v;
+  b.onclick=()=>{inp.value=v;inp.dispatchEvent(new Event('input',{bubbles:true}));paint()};w.appendChild(b)});
+ inp.addEventListener('input',paint);paint();return w}
+function fld(label,vals){const f=mk('<div class="fld3"></div>'),i=label.querySelector('input');f.append(label);if(i)f.append(chips(i,vals));return f}
+function build(g){
+ if(!g||g.dataset.fin3)return;
+ const nt=g.querySelector(':scope>.cf3.nt3'),tm=$$(g,':scope>.cf3').find(x=>x!==nt),
+  cks=$$(g,':scope>label.cf.ck'),ins=$$(g,':scope>label.cf').find(l=>l.querySelector('textarea'));
+ if(!nt||!tm)return;
+ g.dataset.fin3='1';
+ const s2=step(2,'¿Qué evalúa?','Elige la temática y dónde se anota la nota'),
+  s3=step(3,'Tiempo y aprobación','Pon los minutos y la nota para aprobar'),
+  s4=step(4,'Opciones','Activa solo lo que necesites');
+ /* paso 2 */
+ s2.querySelector('.fb3').append(nt);
+ const hint=nt.querySelector('.cf3h');
+ if(hint){const paint=()=>hint.classList.toggle('warn',/^\s*⚠/.test(hint.textContent));paint();new MutationObserver(paint).observe(hint,{childList:true,characterData:true,subtree:true})}
+ /* paso 3 */
+ const labs=$$(tm,':scope>label.cf'),lt=labs[0],la=labs[1],ln=labs[2],h2=tm.querySelector('.cf3h');
+ if(h2)h2.remove();
+ if(lt){const sp=lt.querySelector('span');if(sp)sp.textContent='Tiempo (minutos)'}
+ if(la){const sp=la.querySelector('span');if(sp)sp.textContent='Nota mínima para aprobar (de 20)'}
+ if(ln)ln.classList.add('lvl');
+ tm.textContent='';
+ if(lt)tm.append(fld(lt,[[0,'Sin límite'],[15,'15 min'],[30,'30 min'],[45,'45 min'],[60,'60 min']]));
+ if(la)tm.append(fld(la,[[10,'10'],[11,'11'],[12,'12'],[14,'14']]));
+ if(ln)tm.append(ln);
+ s3.querySelector('.fb3').append(tm);
+ /* paso 4 */
+ const T={mz:['Mezclar las preguntas','Cada alumno las ve en distinto orden'],
+  dl:['Botón «Descargar imagen»','Aparece cuando el alumno comprueba'],
+  rev:['Dejar pendiente de revisión','El alumno ve su nota cuando tú revises']},
+  b4=s4.querySelector('.fb3');
+ cks.forEach(l=>{const i=l.querySelector('input');if(!i)return;
+  const oc=i.getAttribute('onchange')||'',k=oc.includes("'rev'")?'rev':oc.includes("'dl'")?'dl':oc.includes("'mz'")?'mz':'';
+  if(k){const t=T[k];let sub=t[1];if(k==='rev'&&i.disabled)sub='Se activa al agregar una pregunta de respuesta libre';
+   l.textContent='';l.append(i,mk('<span class="sw3"><b>'+t[0]+'</b><small>'+sub+'</small></span>'))}
+  b4.append(l)});
+ if(ins){const sp=ins.querySelector('span');if(sp)sp.textContent='Mensaje para el alumno antes de empezar (opcional)';
+  const ta=ins.querySelector('textarea');if(ta&&!ta.placeholder)ta.placeholder='Ej.: Lee con calma cada pregunta.';b4.append(ins)}
+ g.textContent='';g.append(s2,s3,s4);
+}
+function build1(z){
+ if(!z||z.dataset.f3)return;z.dataset.f3='1';
+ const h=z.querySelector('.fzt');if(h)h.remove();
+ const fb=mk('<div class="fb3"></div>');while(z.firstChild)fb.appendChild(z.firstChild);
+ z.className='fs3 fz';z.insertAdjacentHTML('afterbegin',hdr(1,'Nombre y carpeta','Cómo se llamará y dónde lo guardas'));z.append(fb);
+ const sp=fb.querySelector('label.cf>span');if(sp)sp.textContent='Nombre del examen';
+ const sc=fb.querySelector('div.cf>span');if(sc)sc.textContent='Carpeta';
+}
+window.tbOpenCfg=function(){
+ const r=ob.apply(this,arguments);
+ try{
+  const all=document.querySelectorAll('.mdl .mbx.fin2'),w=all[all.length-1];
+  if(w){
+   build1(w.querySelector('section.fz'));
+   build(w.querySelector('.cfg'));
+   const sm=w.querySelector('.fht small');
+   if(sm){const nq=((window.CUR&&CUR.qs)||[]).length;sm.textContent='Completa los 4 pasos y guarda'+(nq?' · '+nq+(nq===1?' pregunta':' preguntas'):'')}
+  }
+ }catch(x){console.error('fin3',x)}
+ return r};
 })();
 </script>
 </body></html>
