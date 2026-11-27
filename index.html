@@ -470,6 +470,21 @@ body.dg .dz{border-color:var(--c);background:#f0fdf4;color:var(--c)}.mk{position
 .qxr input.qxc{width:20px!important;height:30px!important;min-height:0!important;line-height:28px!important;padding:0!important;margin:0 3px!important;font-size:15px!important;font-weight:800;text-align:center;text-transform:uppercase;border:0!important;border-radius:0!important;outline:none;background-color:transparent!important;background-image:linear-gradient(#64748b,#64748b)!important;background-repeat:no-repeat!important;background-position:center bottom!important;background-size:12px 2px!important}
 .qxr input.qxc:focus{background-color:#f0fdf4!important}
 input.qcq.ok+.qxr{background:#dcfce7}input.qcq.bad+.qxr{background:#ffe4ea}
+/* Móvil: en 'código exacto' la columna del código mide 350px y deja la del producto en 0.
+   Se apila: producto arriba, casillas del código abajo. */
+@media(max-width:600px){
+.ctb.qx:not(.qed),.ctb.qx:not(.qed) tbody{display:block;width:100%}
+.ctb.qx:not(.qed) tr{display:block}
+.ctb.qx:not(.qed) tr:first-child{display:flex}
+.ctb.qx:not(.qed) tr:first-child th{flex:1 1 0;width:auto!important;min-width:0}
+.ctb.qx:not(.qed) td{display:block;width:100%}
+.ctb.qx:not(.qed) td.qpn{border-right:0;padding:10px 12px 6px;font-size:14px;font-weight:700;line-height:1.3;word-break:break-word}
+.ctb.qx:not(.qed) td.qin{border-top:0}
+.ctb.qx .qxr{flex-wrap:nowrap;padding:4px 4px 10px}
+.ctb.qx .qxr input.qxc{width:16px!important;margin:0 2px!important}
+.ctb.qx .qxr .qxs{letter-spacing:1px}
+.ctb.qx.qed{min-width:560px}
+}
 .qcr>b{min-width:0;margin-right:2px}.qcr{gap:6px}.qcr .qtg{font-size:12px;padding:5px 8px}
 .qcb{display:flex;flex-direction:column;gap:8px;background:#f6faf7;border:2px solid var(--bd);border-radius:12px;padding:8px 10px;margin:4px 0 10px}
 .qcr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px}
