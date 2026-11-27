@@ -4341,7 +4341,7 @@ window.evqAns=function(c){
  let m=c.m==='lis'?'lis':'esc',main=String(c.main||''),alts=(c.alts||[]).map(String),op=(c.op||[]).map(String),cs=new Set(c.cs||[]);
  while(op.length<2)op.push('');if(!alts.length)alts=[''];if(!cs.size)cs.add(0);
  const w=document.createElement('div');w.className='mdl';w.tabIndex=-1;
- w.innerHTML='<div class="mbx exm"><b>'+H(c.title||'Respuesta del casillero')+'</b>'+(c.intro?'<p>'+H(c.intro)+'</p>':'')
+ w.innerHTML='<div class="mbx exm exbig"><b>'+H(c.title||'Respuesta del casillero')+'</b>'+(c.intro?'<p>'+H(c.intro)+'</p>':'')
   +(c.lock?'':'<div class="qcr" style="margin:10px 0"><button type="button" class="qtg" data-a="esc">Escribe la palabra</button><button type="button" class="qtg" data-a="lis">Elige de la lista</button></div>')
   +'<div class="nmw"></div><small class="nme" style="display:none;color:#e11d48;font-weight:700;margin:6px 0"></small>'
   +'<div class="row" style="justify-content:flex-end;margin-top:10px"><button type="button" class="bt w" data-a="no">Cancelar</button><button type="button" class="bt" data-a="ok">Guardar</button></div></div>';
@@ -4812,7 +4812,7 @@ function build(g){
   b4.append(l)});
  if(ins){const sp=ins.querySelector('span');if(sp)sp.textContent='Mensaje para el alumno antes de empezar (opcional)';
   const ta=ins.querySelector('textarea');if(ta&&!ta.placeholder)ta.placeholder='Ej.: Lee con calma cada pregunta.';b4.append(ins)}
- g.textContent='';g.append(s2,s3,s4);
+ s2.classList.add('fsE');s3.classList.add('fsT');s4.classList.add('fsO');g.textContent='';g.append(s2,s3,s4);
 }
 function build1(z){
  if(!z||z.dataset.f3)return;z.dataset.f3='1';
@@ -4836,4 +4836,263 @@ window.tbOpenCfg=function(){
  return r};
 })();
 </script>
+<style id="v81css">
+/* v81: ventana «Respuesta del casillero» más grande y cómoda */
+.mbx.exm.exbig{width:min(780px,100%);max-height:calc(100vh - 24px);overflow:auto;padding:26px 30px}
+.exbig>b{display:block;font-size:22px;margin-bottom:4px}
+.exbig .qcr{margin:14px 0!important}
+.exbig .qtg{font-size:15px;padding:9px 18px}
+.exbig .exl2{gap:10px;max-height:min(54vh,480px);padding-right:6px;margin-bottom:8px}
+.exbig .exmr{gap:10px;align-items:stretch}
+.exbig .exmr input{font-size:17px;font-weight:600;padding:12px 14px;min-height:52px}
+.exbig .mct{flex:none;min-width:124px;min-height:52px;padding:0 14px;font-size:15px}
+.exbig .exmr .x{flex:none;min-width:52px;min-height:52px;font-size:18px;border-radius:10px}
+.exbig .nmi{font-size:18px;padding:13px 15px;min-height:52px}
+.exbig .mmh{font-size:14px;margin-bottom:6px}
+.exbig .hint{font-size:14px;line-height:1.45}
+.exbig .row .bt{padding:12px 22px;font-size:15px}
+@media(max-width:560px){.mbx.exm.exbig{padding:18px 14px}.exbig .mct{min-width:96px;font-size:14px}.exbig .exmr input{font-size:16px}}
+/* v82: «Finalizar edición» en 3 columnas y compacta: todo visible sin bajar */
+.mbx.cfm.fin2{width:min(1040px,100%)}
+.fin2 .cfh{padding:11px 18px}
+.fin2 .fhi{width:36px;height:36px;border-radius:10px}
+.fin2 .fht strong{font-size:17px}
+.fin2 .fht small{font-size:12.5px;margin-top:0}
+.fin2 .cfo{padding:10px 18px}
+.fin2 .cfo .bt{padding:10px 16px;font-size:14.5px}
+.mbx.cfm.fin2 .cfs{padding:12px 16px;gap:12px}
+.fin2 .fs3{padding:11px 13px;gap:9px}
+.fin2 .fs3>header i{width:26px;height:26px;font-size:13px;line-height:26px}
+.fin2 .fs3>header b{font-size:15px}
+.fin2 .fs3>header small{font-size:12px}
+.fin2 .fb3{gap:9px}
+.fin2 .fb3 .cf>span{margin-bottom:3px;font-size:12.5px}
+.fin2 .fb3 select,.fin2 .fb3 input:not([type=checkbox]),.fin2 .fb3 textarea{font-size:14.5px}
+.fin2 .fb3 .cf.ck{padding:8px 10px}
+.fin2 .fb3 textarea{min-height:0;height:64px;resize:vertical}
+.fin2 .fld3 input[type=number]{font-size:18px}
+.fin2 .chs3{margin-top:6px}
+.fin2 .chs3 button{padding:4px 10px;font-size:12.5px}
+@media(min-width:900px){
+.mbx.cfm.fin2 .cfs{grid-template-columns:1fr 1fr 1fr}
+.mbx.cfm.fin2 .cfs>.fz{grid-column:1;grid-row:1}
+.mbx.cfm.fin2 .cfs>.fsE{grid-column:1;grid-row:2}
+.mbx.cfm.fin2 .cfs>.fsT{grid-column:2;grid-row:1/span 2}
+.mbx.cfm.fin2 .cfs>.fsO{grid-column:3;grid-row:1/span 2}
+.fin2 .fsT .fb3 .cf3{grid-template-columns:1fr}
+}
+@media(max-height:720px){.fin2 .fs3>header small{display:none}}
+@media(max-height:620px){.fin2 .sw3 small{display:none}.fin2 .fb3 textarea{height:52px}}
+</style>
+<style id="fin83-css">
+/* ===== v83: «Finalizar edición» a pantalla completa, 4 pasos a la vista, más dinámica ===== */
+@keyframes f83fade{from{opacity:0}to{opacity:1}}
+@keyframes f83pop{from{opacity:0;transform:scale(.96) translateY(14px)}to{opacity:1;transform:none}}
+@keyframes f83up{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes f83flash{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--sc) 55%,transparent)}100%{box-shadow:0 0 0 18px transparent}}
+.mdl:has(.mbx.cfm.fin2){padding:12px;background:rgba(8,24,16,.66);backdrop-filter:blur(6px);animation:f83fade .18s ease-out}
+.mdl .mbx.cfm.fin2{width:min(1760px,100%);height:calc(100vh - 24px);height:calc(100dvh - 24px);max-height:none;border:0;border-radius:22px;background:#f2f8f4;animation:f83pop .3s cubic-bezier(.2,.9,.3,1.15)}
+/* cabecera */
+.mdl .fin2 .cfh{flex:none;padding:14px 22px;gap:18px;border:0;background:linear-gradient(120deg,#05561a,#0a8a2f 60%,#19a64c);color:#fff}
+.fin2 .cfh b,.fin2 .fht strong{color:#fff}
+.mdl .fin2 .fhi{width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.2)}
+.mdl .fin2 .fht strong{font-size:20px}
+.mdl .fin2 .fht small{color:rgba(255,255,255,.88);font-size:13px}
+.mdl .fin2 .cfxb{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.18);color:#fff;font-size:16px;transition:background .15s,transform .15s}
+.fin2 .cfxb:hover{background:rgba(255,255,255,.32);transform:rotate(90deg)}
+.f83st{flex:1;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;min-width:0}
+.f83p{display:flex;align-items:center;gap:8px;padding:6px 16px 6px 6px;border-radius:999px;border:1.5px solid rgba(255,255,255,.25);background:rgba(255,255,255,.12);color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer;transition:background .2s,color .2s,transform .15s}
+.f83p:hover{background:rgba(255,255,255,.25);transform:translateY(-1px)}
+.f83p i{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.25);font:800 14px system-ui,sans-serif;font-style:normal;transition:background .2s,color .2s}
+.f83p.ok{background:#fff;color:#05561a;border-color:#fff}
+.f83p.ok i{background:#16a34a;color:#fff}
+.f83p.warn{background:#fff7e0;color:#92400e;border-color:#fbbf24}
+.f83p.warn i{background:#f59e0b;color:#fff}
+.f83bar{flex:none;height:5px;background:#cfe3d6}
+.f83bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#16a34a,#4ade80);transition:width .45s cubic-bezier(.3,.9,.3,1),background .3s}
+.f83bar.warn span{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+/* los 4 pasos en una sola fila */
+.mdl .mbx.cfm.fin2 .cfs{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:minmax(0,1fr);gap:16px;padding:18px 22px;background:#f2f8f4;overflow:auto}
+.mdl .mbx.cfm.fin2 .cfs>.fz,.mdl .mbx.cfm.fin2 .cfs>.fsE,.mdl .mbx.cfm.fin2 .cfs>.fsT,.mdl .mbx.cfm.fin2 .cfs>.fsO{grid-column:auto;grid-row:auto}
+/* tarjeta de cada paso */
+.mdl .fin2 .fs3{--sc:#06621c;position:relative;display:flex;flex-direction:column;gap:0;padding:0;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;background:#fff;border:1px solid #dbe7df;border-top:6px solid var(--sc);border-radius:20px;box-shadow:0 10px 28px -16px rgba(19,48,42,.4);animation:f83up .5s cubic-bezier(.2,.8,.2,1) backwards;transition:box-shadow .2s,transform .2s,border-color .2s}
+.mdl .fin2 .fs3:hover{box-shadow:0 16px 36px -16px rgba(19,48,42,.5)}
+.mdl .fin2 .fs3:focus-within{border-color:var(--sc);transform:translateY(-3px);box-shadow:0 0 0 3px color-mix(in srgb,var(--sc) 22%,transparent),0 18px 38px -16px rgba(19,48,42,.5)}
+.mdl .fin2 .fs3.f83fl{animation:f83flash .9s ease-out}
+.mdl .fin2 .fs3>header{position:relative;z-index:1;padding:16px 18px;gap:12px;background:color-mix(in srgb,var(--sc) 9%,#fff);border-bottom:1px solid color-mix(in srgb,var(--sc) 18%,#fff)}
+.mdl .fin2 .fs3>header i{width:38px;height:38px;line-height:38px;font-size:18px;background:var(--sc);box-shadow:0 6px 14px -6px var(--sc)}
+.mdl .fin2 .fs3>header b{font-size:17px;color:#13302a}
+.mdl .fin2 .fs3>header small{font-size:12.5px}
+.f83s{margin-left:auto;flex:none;padding:4px 10px;border-radius:999px;font:800 11.5px system-ui,sans-serif;background:#eef2f0;color:#5b6f66;transition:background .2s,color .2s}
+.f83s.ok{background:#dcfce7;color:#166534}
+.f83s.warn{background:#fef3c7;color:#92400e}
+.f83w{position:absolute;right:-18px;bottom:-22px;width:170px;height:170px;color:var(--sc);opacity:.07;pointer-events:none}
+.f83w svg{width:100%;height:100%}
+.mdl .fin2 .fb3{position:relative;z-index:1;flex:1 1 auto;min-height:0;padding:18px;gap:16px}
+/* campos */
+.mdl .fin2 .fb3 .cf>span{font-size:13px;font-weight:800;color:#274238;margin-bottom:6px}
+.mdl .fin2 .fb3 select,.mdl .fin2 .fb3 input:not([type=checkbox]),.mdl .fin2 .fb3 textarea{font-size:16px;padding:12px 14px;border:2px solid #d5e2d9;border-radius:12px;background:#fbfdfc;transition:border-color .15s,box-shadow .15s,background .15s}
+.mdl .fin2 .fb3 select:focus,.mdl .fin2 .fb3 input:focus,.mdl .fin2 .fb3 textarea:focus{outline:0;border-color:var(--sc);background:#fff;box-shadow:0 0 0 4px color-mix(in srgb,var(--sc) 20%,transparent)}
+.mdl .fin2 #tbname{font-size:19px;font-weight:800}
+.mdl .fin2 .fld3 input[type=number]{font-size:34px;font-weight:900;padding:8px 10px;color:var(--sc)}
+.mdl .fin2 .fb3 .cf3,.mdl .fin2 .fsT .fb3 .cf3{grid-template-columns:1fr;gap:16px}
+.mdl .fin2 .chs3{gap:8px;margin-top:10px}
+.mdl .fin2 .chs3 button{padding:7px 14px;font-size:13.5px;border-width:2px}
+.mdl .fin2 .chs3 button:hover{transform:translateY(-1px);border-color:var(--sc)}
+.mdl .fin2 .chs3 button.on{background:var(--sc);border-color:var(--sc);color:#fff;box-shadow:0 6px 14px -8px var(--sc)}
+.mdl .fin2 .cf3h{font-size:13px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--sc) 9%,#fff);color:#274238}
+.mdl .fin2 .cf3h.warn{background:#fff7e0;color:#92400e}
+/* interruptores del paso 4 como tarjetas */
+.mdl .fin2 .fb3 .cf.ck{padding:14px 16px;gap:12px;border:2px solid #e1ebe4;border-radius:16px;background:#fff;cursor:pointer;transition:border-color .15s,background .15s,transform .15s}
+.mdl .fin2 .fb3 .cf.ck:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--sc) 50%,#fff)}
+.mdl .fin2 .fb3 .cf.ck:has(input:checked){border-color:var(--sc);background:color-mix(in srgb,var(--sc) 8%,#fff)}
+.mdl .fin2 .sw3 b{font-size:15px}
+.mdl .fin2 .sw3 small{font-size:12.5px}
+.mdl .fin2 .cfg .cf.ck input[type=checkbox]:checked{background:var(--sc)}
+.mdl .fin2 .fsO .fb3>label.cf:has(textarea){display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
+.mdl .fin2 .fsO .fb3 textarea{flex:1 1 auto;height:auto;min-height:110px;resize:none}
+/* resumen en el paso 1 */
+.f83q{margin-top:auto;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:16px;background:color-mix(in srgb,var(--sc) 9%,#fff);border:1.5px dashed color-mix(in srgb,var(--sc) 45%,#fff)}
+.f83q svg{flex:none;width:34px;height:34px;color:var(--sc)}
+.f83q b{display:block;font-size:15px;color:#13302a}
+.f83q small{display:block;font-size:12.5px;color:var(--mu);margin-top:1px}
+/* pie */
+.mdl .fin2 .cfo{padding:14px 22px;gap:12px;align-items:center;background:#fff;border-top:1px solid #dbe7df}
+.f83sum{margin-right:auto;display:flex;align-items:center;gap:10px;font:700 14.5px system-ui,sans-serif;color:#166534;min-width:0}
+.f83sum.warn{color:#92400e}
+.mdl .fin2 .cfo .bt{padding:13px 22px;font-size:15.5px;border-radius:14px;transition:transform .15s,box-shadow .15s}
+.fin2 .cfo .bt:hover{transform:translateY(-2px)}
+.mdl .fin2 .cfo [data-g]{flex:0 1 auto;max-width:none;min-width:240px;box-shadow:0 12px 24px -10px rgba(6,98,28,.75)}
+/* pantallas medianas: 2 × 2 */
+@media(min-width:760px) and (max-width:1179px){
+.mdl .mbx.cfm.fin2 .cfs{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+.f83p span{display:none}.f83p{padding:6px}
+}
+/* celular: pantalla completa, una columna con scroll */
+@media(max-width:759px){
+.mdl:has(.mbx.cfm.fin2){padding:0}
+.mdl .mbx.cfm.fin2{width:100%;height:100vh;height:100dvh;border-radius:0}
+.mdl .mbx.cfm.fin2 .cfs{grid-template-columns:1fr;grid-template-rows:none;grid-auto-rows:auto;padding:12px}
+.mdl .fin2 .fs3{overflow:visible;min-height:auto}
+.mdl .fin2 .cfh{padding:12px 14px;flex-wrap:wrap}
+.f83st{order:3;flex:1 1 100%}
+.f83p span{display:none}.f83p{padding:5px}
+.mdl .fin2 .fht small{display:none}
+.f83sum{flex:1 1 100%;order:-3}
+.mdl .fin2 .cfo{flex-wrap:wrap}
+}
+@media(max-height:700px) and (min-width:760px){
+.mdl .fin2 .fs3>header{padding:11px 16px}.mdl .fin2 .fs3>header small{display:none}
+.mdl .fin2 .fb3{padding:13px 16px;gap:12px}.f83q{display:none}
+}
+@media(prefers-reduced-motion:reduce){.mdl:has(.mbx.cfm.fin2),.mdl .mbx.cfm.fin2,.mdl .fin2 .fs3{animation:none!important}}
+</style>
+<script id="fin83-js">
+(function(){
+'use strict';
+const ob=window.tbOpenCfg;
+if(typeof ob!=='function')return;
+const S=p=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
+const ICO=[
+ S('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'),
+ S('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M8 7h8M8 11h6"/>'),
+ S('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+ S('<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>')
+];
+const NAMES=['Nombre','Temática','Tiempo','Opciones'],COLS=['#06621c','#2563eb','#d97706','#7c3aed'];
+window.tbOpenCfg=function(){
+ const r=ob.apply(this,arguments);
+ try{
+  const all=document.querySelectorAll('.mdl .mbx.fin2'),w=all[all.length-1];
+  if(!w||w.dataset.f83)return r;
+  const cards=[w.querySelector('.fs3.fz'),w.querySelector('.fsE'),w.querySelector('.fsT'),w.querySelector('.fsO')];
+  if(cards.some(c=>!c))return r;
+  w.dataset.f83='1';
+  cards.forEach((c,i)=>{
+   c.style.setProperty('--sc',COLS[i]);c.style.animationDelay=(90+i*80)+'ms';
+   const h=c.querySelector(':scope>header');if(h)h.insertAdjacentHTML('beforeend','<span class="f83s"></span>');
+   c.insertAdjacentHTML('beforeend','<span class="f83w">'+ICO[i]+'</span>')});
+  /* pasos arriba */
+  const hd=w.querySelector('.cfh'),x=hd.querySelector('.cfxb'),st=document.createElement('div');
+  st.className='f83st';
+  st.innerHTML=NAMES.map((n,i)=>'<button type="button" class="f83p" data-i="'+i+'"><i>'+(i+1)+'</i><span>'+n+'</span></button>').join('');
+  hd.insertBefore(st,x);
+  hd.insertAdjacentHTML('afterend','<div class="f83bar"><span></span></div>');
+  const bar=w.querySelector('.f83bar');
+  st.addEventListener('click',ev=>{const b=ev.target.closest('.f83p');if(!b)return;
+   const c=cards[+b.dataset.i];c.scrollIntoView({behavior:'smooth',block:'nearest'});
+   const f=c.querySelector('input:not([type=checkbox]),select:not(:disabled),textarea');if(f)f.focus({preventScroll:true});
+   c.classList.remove('f83fl');void c.offsetWidth;c.classList.add('f83fl')});
+  /* resumen paso 1 y pie */
+  const nq=((window.CUR&&CUR.qs)||[]).length;
+  cards[0].querySelector('.fb3').insertAdjacentHTML('beforeend','<div class="f83q">'+S('<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>')+'<div><b>'+(nq?nq+(nq===1?' pregunta':' preguntas'):'Aún sin preguntas')+'</b><small>en este examen</small></div></div>');
+  const o=w.querySelector('.cfo');o.insertAdjacentHTML('afterbegin','<span class="f83sum"></span>');
+  const sum=o.querySelector('.f83sum'),pills=[...st.children],chips=cards.map(c=>c.querySelector('.f83s'));
+  const upd=()=>{
+   const nm=w.querySelector('#tbname'),sel=cards[1].querySelectorAll('select'),
+    tema=!!(sel[0]&&sel[0].value),nota=!!(sel[1]&&sel[1].value&&!sel[1].disabled),
+    ta=cards[3].querySelector('textarea'),
+    any=[...cards[3].querySelectorAll('input[type=checkbox]')].some(i=>i.checked)||!!(ta&&ta.value.trim());
+   const s=[
+    (nm&&nm.value.trim())?'ok':'warn',
+    !tema?'opt':(nota?'ok':'warn'),
+    'ok',
+    any?'ok':'opt'];
+   const T={ok:'✓ Listo',warn:'Falta',opt:'Opcional'};
+   s.forEach((k,i)=>{chips[i].className='f83s '+k;chips[i].textContent=T[k];
+    pills[i].classList.toggle('ok',k==='ok');pills[i].classList.toggle('warn',k==='warn');
+    pills[i].firstChild.textContent=k==='ok'?'✓':(i+1)});
+   const warns=s.filter(k=>k==='warn').length;
+   bar.firstChild.style.width=((4-warns)/4*100)+'%';bar.classList.toggle('warn',warns>0);
+   sum.classList.toggle('warn',warns>0);
+   sum.textContent=s[0]==='warn'?'⚠ Escribe el nombre del examen (paso 1)':s[1]==='warn'?'⚠ Elige la nota que se registra (paso 2)':'✓ Todo listo para guardar';
+  };
+  ['input','change','click'].forEach(t=>w.addEventListener(t,()=>setTimeout(upd,0)));
+  upd();setTimeout(upd,150);
+  setTimeout(()=>{const nm=w.querySelector('#tbname');if(nm&&!nm.value.trim()&&matchMedia('(min-width:760px)').matches)nm.focus({preventScroll:true})},380);
+ }catch(e){console.error('fin83',e)}
+ return r};
+})();
+</script>
+
+<style id="fin84-css">
+/* ===== v84: «Finalizar edición» más compacta, sin barras de desplazamiento ===== */
+.f83w{right:0;bottom:0;width:130px;height:130px}
+.mdl .fin2 .fs3{scrollbar-width:thin;scrollbar-color:#c9d8cf transparent}
+.mdl .fin2 .fs3>header{padding:11px 14px;gap:10px}
+.mdl .fin2 .fs3>header i{width:32px;height:32px;line-height:32px;font-size:16px}
+.mdl .fin2 .fs3>header b{font-size:15.5px}
+.mdl .fin2 .fs3>header small{font-size:12px}
+.f83s{padding:3px 9px;font-size:11px}
+.mdl .fin2 .fb3{padding:14px;gap:11px}
+.mdl .fin2 .fb3 .cf>span{font-size:12.5px;margin-bottom:4px}
+.mdl .fin2 .fb3 select,.mdl .fin2 .fb3 input:not([type=checkbox]),.mdl .fin2 .fb3 textarea{font-size:14.5px;padding:9px 12px;border-radius:10px}
+.mdl .fin2 #tbname{font-size:17px}
+.mdl .fin2 .fld3 input[type=number]{font-size:26px;padding:5px 8px}
+.mdl .fin2 .fb3 .cf3,.mdl .fin2 .fsT .fb3 .cf3{gap:11px}
+.mdl .fin2 .chs3{gap:6px;margin-top:7px}
+.mdl .fin2 .chs3 button{padding:5px 11px;font-size:12.5px}
+.mdl .fin2 .cf3h{font-size:12.5px;padding:8px 10px}
+.mdl .fin2 .fb3 .cf.ck{padding:10px 12px;gap:10px;border-radius:14px}
+.mdl .fin2 .sw3 b{font-size:14px}
+.mdl .fin2 .sw3 small{font-size:12px}
+.mdl .fin2 .fsO .fb3 textarea{min-height:80px}
+.f83q{padding:10px 12px;gap:10px;border-radius:14px}
+.f83q svg{width:26px;height:26px}
+.f83q b{font-size:14px}
+.f83q small{font-size:12px}
+@media(max-height:860px) and (min-width:760px){.f83q{display:none}.mdl .fin2 .fs3>header small{display:none}}
+@media(max-height:700px) and (min-width:760px){.mdl .fin2 .fb3{padding:10px 12px;gap:8px}.mdl .fin2 .fsO .fb3 textarea{min-height:60px}.mdl .fin2 .sw3 small{display:none}}
+</style>
+
+<style id="fin85-css">
+/* ===== v85: las 4 tarjetas ocupan todo el alto y sin barras visibles ===== */
+.mdl .mbx.cfm.fin2 .cfs{align-items:stretch}
+.mdl .fin2 .fs3{height:100%}
+@media(min-width:760px){
+.mdl .fin2 .fs3{scrollbar-width:none}
+.mdl .fin2 .fs3::-webkit-scrollbar{display:none;width:0;height:0}
+}
+</style>
+
 </body></html>
